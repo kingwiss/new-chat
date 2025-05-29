@@ -448,10 +448,10 @@ video {
     }
     
     .video-wrapper {
-        width: 260px;
-        height: 195px;
-        min-width: 260px;
-        min-height: 195px;
+        width: 280px;
+        height: 210px;
+        min-width: 280px;
+        min-height: 210px;
     }
     
     .chat-container {
@@ -500,10 +500,10 @@ video {
     }
     
     .video-wrapper {
-        width: 240px;
-        height: 180px;
-        min-width: 240px;
-        min-height: 180px;
+        width: 260px;
+        height: 195px;
+        min-width: 260px;
+        min-height: 195px;
     }
     
     .chat-container {
@@ -951,23 +951,6 @@ video {
 @media (max-width: 768px) {
     .header-content {
         gap: 8px;
-        margin-bottom: 10px;
-    }
-    
-    .logo svg {
-        width: 28px;
-        height: 28px;
-    }
-    
-    header h1 {
-        font-size: 1.4rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .header-content {
-        flex-direction: row;
-        gap: 8px;
         margin-bottom: 8px;
     }
     
@@ -977,7 +960,24 @@ video {
     }
     
     header h1 {
-        font-size: 1.2rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-content {
+        flex-direction: row;
+        gap: 6px;
+        margin-bottom: 6px;
+    }
+    
+    .logo svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    header h1 {
+        font-size: 0.8rem;
     }
 }
 
