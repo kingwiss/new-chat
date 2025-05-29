@@ -117,9 +117,23 @@ io.on('connection', (socket) => {
                 currentUser.isSearching = false;
                 partner.isSearching = false;
                 
-                // Notify both users
-                socket.emit('user-connected', { partnerId, shouldCreateOffer: true });
-                io.to(partnerId).emit('user-connected', { partnerId: socket.id, shouldCreateOffer: false });
+                // Notify both users with partner information
+                socket.emit('user-connected', { 
+                    partnerId, 
+                    shouldCreateOffer: true,
+                    partnerInfo: {
+                        gender: partner.preferences.userGender,
+                        category: partner.preferences.category
+                    }
+                });
+                io.to(partnerId).emit('user-connected', { 
+                    partnerId: socket.id, 
+                    shouldCreateOffer: false,
+                    partnerInfo: {
+                        gender: currentUser.preferences.userGender,
+                        category: currentUser.preferences.category
+                    }
+                });
                 
                 console.log(`Matched users: ${socket.id} <-> ${partnerId}`);
                 console.log('User 1 preferences:', currentUser.preferences);

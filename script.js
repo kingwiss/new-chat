@@ -269,6 +269,7 @@ class VideoChat {
     initializeCategoryModal() {
         const categoryModal = document.getElementById('categoryModal');
         const categoryForm = document.getElementById('categoryForm');
+        const closeCategoryModalBtn = document.getElementById('closeCategoryModal');
         
         // Handle form submission
         categoryForm.addEventListener('submit', (e) => {
@@ -277,6 +278,20 @@ class VideoChat {
             const success = this.handleCategoryFormSubmission();
             if (!success) {
                 console.log('Form submission failed validation');
+            }
+        });
+        
+        // Close modal with close button
+        if (closeCategoryModalBtn) {
+            closeCategoryModalBtn.addEventListener('click', () => {
+                this.closeCategoryModal();
+            });
+        }
+        
+        // Close modal when clicking outside
+        categoryModal.addEventListener('click', (e) => {
+            if (e.target === categoryModal) {
+                this.closeCategoryModal();
             }
         });
         
@@ -462,6 +477,9 @@ class VideoChat {
             this.updateStatusMessage('Looking for someone to chat with...', 'success');
              this.showWaiting();
             
+            // Update local video label immediately with user's own info
+            this.updateLocalVideoLabel();
+            
             // Send user preferences with find-user request
             console.log('Emitting find-user event with preferences:', this.userPreferences);
             this.socket.emit('find-user', this.userPreferences);
@@ -504,6 +522,9 @@ class VideoChat {
         this.disableChat();
         this.clearChat();
         
+        // Reset video labels when looking for next user
+        this.resetVideoLabels();
+        
         this.statusMessage.textContent = 'Looking for next person...';
         this.showWaiting();
         
@@ -529,6 +550,9 @@ class VideoChat {
         this.localVideo.srcObject = null;
         this.remoteVideo.srcObject = null;
         
+        // Reset video labels when ending chat
+        this.resetVideoLabels();
+        
         this.startBtn.disabled = false;
         this.nextBtn.disabled = true;
         this.endBtn.disabled = true;
@@ -548,6 +572,9 @@ class VideoChat {
         console.log('Creating peer connection');
         await this.createPeerConnection();
         
+        // Update video labels with user information
+        this.updateVideoLabels(data.partnerInfo);
+        
         if (data.shouldCreateOffer) {
             const offer = await this.peerConnection.createOffer();
             await this.peerConnection.setLocalDescription(offer);
@@ -555,6 +582,44 @@ class VideoChat {
         }
     }
     
+    updateLocalVideoLabel() {
+        // Check if userPreferences exists
+        if (!this.userPreferences) {
+            console.log('User preferences not set yet, skipping local label update');
+            return;
+        }
+        
+        // Update local video label with user's own info
+        const localLabel = document.querySelector('.video-wrapper:first-child .video-label');
+        if (localLabel) {
+            const userGenderLetter = this.userPreferences.userGender === 'male' ? 'M' : 'F';
+            localLabel.textContent = `You (${userGenderLetter}) - ${this.userPreferences.category}`;
+            console.log('Updated local label:', localLabel.textContent);
+        }
+    }
+    
+    updateVideoLabels(partnerInfo) {
+        // Update local video label with user's own info
+        this.updateLocalVideoLabel();
+        
+        // Update remote video label with partner's info
+        const remoteLabel = document.querySelector('.video-wrapper:last-child .video-label');
+        if (remoteLabel && partnerInfo) {
+            const partnerGenderLetter = partnerInfo.gender === 'male' ? 'M' : 'F';
+            remoteLabel.textContent = `Stranger (${partnerGenderLetter}) - ${partnerInfo.category}`;
+            console.log('Updated remote label:', remoteLabel.textContent);
+        }
+    }
+    
+    resetVideoLabels() {
+        // Reset labels to default
+        const localLabel = document.querySelector('.video-wrapper:first-child .video-label');
+        const remoteLabel = document.querySelector('.video-wrapper:last-child .video-label');
+        
+        localLabel.textContent = 'You';
+        remoteLabel.textContent = 'Stranger';
+    }
+
     handleUserDisconnected() {
         if (this.peerConnection) {
             this.peerConnection.close();
@@ -565,6 +630,9 @@ class VideoChat {
         this.isConnected = false;
         this.disableChat();
         this.clearChat();
+        
+        // Reset video labels when user disconnects
+        this.resetVideoLabels();
         
         if (this.localStream) {
             this.statusMessage.textContent = 'User disconnected. Looking for someone new...';
