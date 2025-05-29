@@ -424,119 +424,123 @@ video {
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {
-        padding: 10px;
+        padding: 8px;
+    }
+    
+    header {
+        margin-bottom: 8px;
     }
     
     header h1 {
-        font-size: 1.8rem;
+        font-size: 1.4rem;
     }
     
     .main-content {
-        padding: 20px 15px;
+        padding: 12px 10px;
         max-width: 98%;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
     
     .video-container {
         flex-direction: column;
-        gap: 10px;
-        margin-bottom: 15px;
+        gap: 8px;
+        margin-bottom: 10px;
     }
     
     .video-wrapper {
-        width: 280px;
-        height: 210px;
-        min-width: 280px;
-        min-height: 210px;
+        width: 260px;
+        height: 195px;
+        min-width: 260px;
+        min-height: 195px;
     }
     
     .chat-container {
         max-width: 95%;
         margin: 0 auto;
-        height: 104px;
+        height: 90px;
     }
     
     .chat-messages {
-        max-height: 50px;
-        padding: 6px 12px;
-        font-size: 0.85rem;
-    }
-    
-    .controls {
-        gap: 6px;
-        margin-bottom: 15px;
-        flex-wrap: nowrap;
-    }
-    
-    .btn {
-        padding: 6px 12px;
-        font-size: 0.8rem;
-        min-width: 80px;
-        border-radius: 8px;
-    }
-}
-
-@media (max-width: 480px) {
-    .container {
-        padding: 8px;
-    }
-    
-    header {
-        margin-bottom: 15px;
-    }
-    
-    header h1 {
-        font-size: 1.5rem;
-    }
-    
-    .main-content {
-        padding: 15px 10px;
-        max-width: 99%;
-        margin-bottom: 5px;
-    }
-    
-    .video-wrapper {
-        width: 280px;
-        height: 280px;
-        min-width: 280px;
-        min-height: 280px;
-    }
-    
-    .chat-container {
-        max-width: 98%;
-        margin: 0 auto;
-        height: 92px;
-    }
-    
-    .chat-messages {
-        max-height: 40px;
-        padding: 4px 10px;
+        max-height: 45px;
+        padding: 5px 10px;
         font-size: 0.8rem;
     }
     
     .controls {
-        gap: 4px;
+        gap: 5px;
         margin-bottom: 10px;
         flex-wrap: nowrap;
     }
     
     .btn {
-        padding: 5px 8px;
+        padding: 5px 10px;
         font-size: 0.75rem;
         min-width: 70px;
         border-radius: 6px;
     }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 5px;
+    }
+    
+    header {
+        margin-bottom: 5px;
+    }
+    
+    header h1 {
+        font-size: 1.2rem;
+    }
+    
+    .main-content {
+        padding: 10px 8px;
+        max-width: 99%;
+        margin-bottom: 3px;
+    }
+    
+    .video-wrapper {
+        width: 240px;
+        height: 180px;
+        min-width: 240px;
+        min-height: 180px;
+    }
+    
+    .chat-container {
+        max-width: 98%;
+        margin: 0 auto;
+        height: 80px;
+    }
+    
+    .chat-messages {
+        max-height: 35px;
+        padding: 3px 8px;
+        font-size: 0.75rem;
+    }
+    
+    .controls {
+        gap: 3px;
+        margin-bottom: 8px;
+        flex-wrap: nowrap;
+    }
+    
+    .btn {
+        padding: 4px 6px;
+        font-size: 0.7rem;
+        min-width: 60px;
+        border-radius: 4px;
+    }
     
     .status {
-        margin-bottom: 15px;
+        margin-bottom: 8px;
     }
     
     #statusMessage {
-        font-size: 1rem;
+        font-size: 0.9rem;
     }
     
     #onlineCount {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
     }
 }
 
@@ -946,32 +950,34 @@ video {
 /* Responsive header */
 @media (max-width: 768px) {
     .header-content {
-        gap: 10px;
+        gap: 8px;
+        margin-bottom: 10px;
     }
     
     .logo svg {
-        width: 35px;
-        height: 35px;
+        width: 28px;
+        height: 28px;
     }
     
     header h1 {
-        font-size: 1.8rem;
+        font-size: 1.4rem;
     }
 }
 
 @media (max-width: 480px) {
     .header-content {
-        flex-direction: column;
-        gap: 6px;
+        flex-direction: row;
+        gap: 8px;
+        margin-bottom: 8px;
     }
     
     .logo svg {
-        width: 30px;
-        height: 30px;
+        width: 24px;
+        height: 24px;
     }
     
     header h1 {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
     }
 }
 
