@@ -7,20 +7,122 @@ class VideoChat {
         this.isConnected = false;
         this.isSearching = false;
         
-        this.localVideo = document.getElementById('localVideo');
-        this.remoteVideo = document.getElementById('remoteVideo');
-        this.startBtn = document.getElementById('startBtn');
-        this.nextBtn = document.getElementById('nextBtn');
-        this.endBtn = document.getElementById('endBtn');
-        this.statusMessage = document.getElementById('statusMessage');
-        this.onlineCount = document.getElementById('onlineCount');
-        this.waitingMessage = document.getElementById('waitingMessage');
-        this.chatMessages = document.getElementById('chatMessages');
-        this.chatInput = document.getElementById('chatInput');
-        this.sendBtn = document.getElementById('sendBtn');
+        // Check browser compatibility
+        this.checkBrowserCompatibility();
         
-        this.initializeEventListeners();
-        this.connectSocket();
+        // Initialize DOM elements with error checking
+        this.initializeDOMElements();
+        
+        // Initialize event listeners and socket connection
+        if (this.elementsLoaded && this.isCompatible) {
+            this.initializeEventListeners();
+            this.connectSocket();
+        } else if (!this.elementsLoaded) {
+            console.error('Failed to initialize DOM elements. Video chat functionality will not work.');
+            // Add a visible error message for the user
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = 'Failed to initialize video chat components. Please refresh the page and try again.';
+            document.querySelector('.main-content').prepend(errorDiv);
+        }
+    }
+    
+    checkBrowserCompatibility() {
+        this.isCompatible = true;
+        let errorMessage = '';
+        
+        // Check for WebRTC support
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            this.isCompatible = false;
+            errorMessage = 'Your browser does not support video chat functionality. Please use a modern browser like Chrome, Firefox, or Edge.';
+            console.error('getUserMedia not supported');
+        }
+        
+        // Check for RTCPeerConnection support
+        if (!window.RTCPeerConnection) {
+            this.isCompatible = false;
+            errorMessage = 'Your browser does not support WebRTC. Please use a modern browser like Chrome, Firefox, or Edge.';
+            console.error('RTCPeerConnection not supported');
+        }
+        
+        // Display error message if browser is not compatible
+        if (!this.isCompatible) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = errorMessage;
+            
+            // Wait for DOM to be ready
+            document.addEventListener('DOMContentLoaded', () => {
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) {
+                    mainContent.prepend(errorDiv);
+                } else {
+                    document.body.prepend(errorDiv);
+                }
+            });
+        }
+    }
+    
+    initializeDOMElements() {
+        try {
+            this.localVideo = document.getElementById('localVideo');
+            this.remoteVideo = document.getElementById('remoteVideo');
+            this.startBtn = document.getElementById('startBtn');
+            this.nextBtn = document.getElementById('nextBtn');
+            this.endBtn = document.getElementById('endBtn');
+            this.statusMessage = document.getElementById('statusMessage') || document.querySelector('.chat-info');
+            this.onlineCount = document.getElementById('onlineCount');
+            this.waitingMessage = document.getElementById('waitingMessage');
+            this.chatMessages = document.getElementById('chatMessages');
+            this.chatInput = document.getElementById('chatInput');
+            this.sendBtn = document.getElementById('sendBtn');
+            
+            // Check if all required elements are loaded
+            this.elementsLoaded = !!(this.localVideo && this.remoteVideo && 
+                                   this.startBtn && this.nextBtn && this.endBtn && 
+                                   this.waitingMessage && this.chatMessages && 
+                                   this.chatInput && this.sendBtn);
+            
+            if (!this.elementsLoaded) {
+                console.error('Missing required DOM elements:', {
+                    localVideo: !!this.localVideo,
+                    remoteVideo: !!this.remoteVideo,
+                    startBtn: !!this.startBtn,
+                    nextBtn: !!this.nextBtn,
+                    endBtn: !!this.endBtn,
+                    statusMessage: !!this.statusMessage,
+                    waitingMessage: !!this.waitingMessage,
+                    chatMessages: !!this.chatMessages,
+                    chatInput: !!this.chatInput,
+                    sendBtn: !!this.sendBtn
+                });
+            } else {
+                console.log('All DOM elements loaded successfully');
+            }
+        } catch (error) {
+            console.error('Error initializing DOM elements:', error);
+            this.elementsLoaded = false;
+        }
+    }
+    
+    updateStatusMessage(message, type = 'info') {
+        if (this.statusMessage) {
+            this.statusMessage.textContent = message;
+            
+            // Remove existing status classes
+            this.statusMessage.classList.remove('error', 'success', 'info');
+            
+            // Add new status class
+            if (type === 'error') {
+                this.statusMessage.classList.add('error');
+            } else if (type === 'success') {
+                this.statusMessage.classList.add('success');
+            }
+            
+            console.log(`Status: ${type} - ${message}`);
+        } else {
+            console.log(`Status message element not found. ${type}: ${message}`);
+        }
     }
     
     initializeEventListeners() {
@@ -171,7 +273,11 @@ class VideoChat {
         // Handle form submission
         categoryForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            this.handleCategoryFormSubmission();
+            console.log('Category form submitted');
+            const success = this.handleCategoryFormSubmission();
+            if (!success) {
+                console.log('Form submission failed validation');
+            }
         });
         
         // Close modal with Escape key
@@ -226,15 +332,20 @@ class VideoChat {
     }
     
     handleCategoryFormSubmission() {
+        console.log('Form submission started');
+        
         const category = document.getElementById('categorySelect').value;
         const userGender = document.getElementById('userGender').value;
         const preferredGender = document.getElementById('preferredGender').value;
         const preferredCategory = document.getElementById('preferredCategory').value;
         
+        console.log('Form values:', { category, userGender, preferredGender, preferredCategory });
+        
         // Validate all fields are selected
         if (!category || !userGender || !preferredGender || !preferredCategory) {
             alert('Please fill in all fields before continuing.');
-            return;
+            console.log('Validation failed - missing fields');
+            return false;
         }
         
         // Handle "same" category preference
@@ -251,11 +362,14 @@ class VideoChat {
             preferredCategory: finalPreferredCategory
         };
         
-        console.log('User preferences:', this.userPreferences);
+        console.log('User preferences set:', this.userPreferences);
         
         // Close modal and start video chat
         this.closeCategoryModal();
+        console.log('Starting video chat...');
         this.startVideoChat();
+        
+        return true;
     }
     
     connectSocket() {
@@ -308,29 +422,69 @@ class VideoChat {
     }
     
     async startVideoChat() {
+        console.log('startVideoChat called');
+        
         try {
-            this.statusMessage.textContent = 'Accessing camera...';
+            console.log('Requesting camera access...');
+            this.updateStatusMessage('Accessing camera...', 'info');
+            
+            // Check if getUserMedia is supported
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                throw new Error('getUserMedia is not supported in this browser');
+            }
             
             this.localStream = await navigator.mediaDevices.getUserMedia({
-                video: { width: 640, height: 640, facingMode: 'user' },
+                video: { 
+                    width: { ideal: 640 }, 
+                    height: { ideal: 640 }, 
+                    facingMode: 'user' 
+                },
                 audio: true
             });
             
+            console.log('Camera access granted, setting up video...');
             this.localVideo.srcObject = this.localStream;
+            
+            // Wait for video to load
+            await new Promise((resolve) => {
+                this.localVideo.onloadedmetadata = () => {
+                    this.localVideo.play();
+                    resolve();
+                };
+            });
+            
+            console.log('Video setup complete');
             
             this.startBtn.disabled = true;
             this.nextBtn.disabled = false;
             this.endBtn.disabled = false;
             
-            this.statusMessage.textContent = 'Looking for someone to chat with...';
-            this.showWaiting();
+            this.updateStatusMessage('Looking for someone to chat with...', 'success');
+             this.showWaiting();
             
             // Send user preferences with find-user request
+            console.log('Emitting find-user event with preferences:', this.userPreferences);
             this.socket.emit('find-user', this.userPreferences);
             
         } catch (error) {
             console.error('Error accessing media devices:', error);
-            this.statusMessage.textContent = 'Error accessing camera. Please allow camera access and try again.';
+            
+            let errorMessage = 'Error accessing camera. ';
+            
+            if (error.name === 'NotAllowedError') {
+                errorMessage += 'Please allow camera access and try again.';
+            } else if (error.name === 'NotFoundError') {
+                errorMessage += 'No camera found. Please connect a camera and try again.';
+            } else if (error.name === 'NotReadableError') {
+                errorMessage += 'Camera is already in use by another application.';
+            } else {
+                errorMessage += error.message || 'Please check your camera settings and try again.';
+            }
+            
+            this.updateStatusMessage(errorMessage, 'error');
+             
+             // Re-enable start button so user can try again
+             this.startBtn.disabled = false;
         }
     }
     
