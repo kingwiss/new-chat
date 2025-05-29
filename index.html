@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cerebray</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%233498db'/%3E%3Ccircle cx='35' cy='40' r='8' fill='white'/%3E%3Ccircle cx='65' cy='40' r='8' fill='white'/%3E%3Cpath d='M30 65 Q50 80 70 65' stroke='white' stroke-width='4' fill='none'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="48" height="48">
+                        <circle cx="50" cy="50" r="45" fill="#3498db"/>
+                        <circle cx="35" cy="40" r="8" fill="white"/>
+                        <circle cx="65" cy="40" r="8" fill="white"/>
+                        <path d="M30 65 Q50 80 70 65" stroke="white" stroke-width="4" fill="none"/>
+                    </svg>
+                </div>
+                <h1>Cerebray</h1>
+            </div>
+        </header>
+        
+        <div class="status">
+            <div id="statusMessage">Click "Start Video Chat" to begin</div>
+            <div id="onlineCount">Online users: 0</div>
+        </div>
+        
+        <div class="main-content">
+            <div class="video-container">
+                <div class="video-wrapper">
+                    <video id="localVideo" autoplay muted playsinline></video>
+                    <div class="video-label">You</div>
+                </div>
+                <div class="video-wrapper">
+                    <video id="remoteVideo" autoplay playsinline></video>
+                    <div class="video-label">Stranger</div>
+                    <div id="waitingMessage" class="waiting-message">Waiting for someone to connect...</div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="startBtn" class="btn btn-primary">Start Video Chat</button>
+                <button id="nextBtn" class="btn btn-secondary" disabled>Next</button>
+                <button id="endBtn" class="btn btn-danger" disabled>End Chat</button>
+            </div>
+            
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-info">Start chatting with your partner!</div>
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" id="chatInput" placeholder="Type a message..." maxlength="500" disabled>
+                    <button id="sendBtn" class="send-btn" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Floating buttons -->
+    <div class="floating-buttons">
+        <a href="https://www.paypal.com/donate/?hosted_button_id=9ANJ4LSGD8UYC" target="_blank" rel="noopener noreferrer" class="floating-btn donation-btn" title="Donate">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5C22 12.28 18.6 15.36 13.45 20.04L12 21.35Z" fill="currentColor"/>
+            </svg>
+            <span>Donate</span>
+        </a>
+        <button class="floating-btn contact-btn" id="contactBtn" title="Contact Us">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 4H4C2.9 4 2.01 4.9 2.01 6L2 18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 8L12 13L4 8V6L12 11L20 6V8Z" fill="currentColor"/>
+            </svg>
+            <span>Contact Us</span>
+        </button>
+    </div>
+    
+    <!-- Category Selection Modal -->
+    <div id="categoryModal" class="modal">
+        <div class="modal-content category-modal">
+            <div class="modal-header">
+                <h2>Select Your Profile</h2>
+            </div>
+            <form id="categoryForm" class="category-form">
+                <div class="form-group">
+                    <label for="categorySelect">I identify as:</label>
+                    <select id="categorySelect" name="category" required>
+                        <option value="">Select a category</option>
+                        <option value="artist">Artist</option>
+                        <option value="entrepreneur">Entrepreneur</option>
+                        <option value="content-creator">Content Creator</option>
+                        <option value="author">Author</option>
+                        <option value="musician">Musician</option>
+                        <option value="crypto">Crypto</option>
+                        <option value="student">Student</option>
+                        <option value="athlete">Athlete</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="userGender">My gender:</label>
+                    <select id="userGender" name="userGender" required>
+                        <option value="">Select your gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="non-binary">Non-binary</option>
+                        <option value="prefer-not-to-say">Prefer not to say</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="preferredGender">I want to match with:</label>
+                    <select id="preferredGender" name="preferredGender" required>
+                        <option value="">Select preferred gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="non-binary">Non-binary</option>
+                        <option value="any">Any gender</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="preferredCategory">I want to connect with:</label>
+                    <select id="preferredCategory" name="preferredCategory" required>
+                        <option value="">Select preferred category</option>
+                        <option value="same">Same category as me</option>
+                        <option value="artist">Artist</option>
+                        <option value="entrepreneur">Entrepreneur</option>
+                        <option value="content-creator">Content Creator</option>
+                        <option value="author">Author</option>
+                        <option value="musician">Musician</option>
+                        <option value="crypto">Crypto</option>
+                        <option value="student">Student</option>
+                        <option value="athlete">Athlete</option>
+                        <option value="any">Any category</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Continue to Chat</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Contact Modal -->
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Contact Us</h2>
+                <span class="close" id="closeModal">&times;</span>
+            </div>
+            <form id="contactForm" class="contact-form" action="https://formsubmit.co/fredwisseh@gmail.com" method="POST">
+                <!-- FormSubmit.co configuration -->
+                <input type="hidden" name="_subject" value="New Contact Form Submission from Video Chat App">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_template" value="table">
+                <input type="hidden" name="_next" value="http://localhost:3000/">
+                
+                <div class="form-group">
+                    <label for="contactName">Name</label>
+                    <input type="text" id="contactName" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactEmail">Email</label>
+                    <input type="email" id="contactEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactMessage">Message</label>
+                    <textarea id="contactMessage" name="message" rows="5" required></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </div>
+            </form>
+            
+            <!-- Thank You Message (hidden by default) -->
+            <div id="thankYouMessage" class="thank-you-message" style="display: none;">
+                <div class="thank-you-content">
+                    <h3>Thanks for reaching Cerebray</h3>
+                    <p>We will contact you shortly</p>
+                    <button type="button" class="btn btn-primary" id="closeThankYou">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
