@@ -10,25 +10,27 @@
 <body>
     <div class="container">
         <header>
-            <div class="header-content">
-                <div class="logo">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="48" height="48">
-                        <circle cx="50" cy="50" r="45" fill="#3498db"/>
-                        <circle cx="35" cy="40" r="8" fill="white"/>
-                        <circle cx="65" cy="40" r="8" fill="white"/>
-                        <path d="M30 65 Q50 80 70 65" stroke="white" stroke-width="4" fill="none"/>
-                    </svg>
-                </div>
-                <h1>Cerebray</h1>
-            </div>
         </header>
         
-        <div class="status">
-            <div id="statusMessage">Click "Start Video Chat" to begin</div>
-            <div id="onlineCount">Online users: 0</div>
-        </div>
+
         
         <div class="main-content">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="48" height="48">
+                            <circle cx="50" cy="50" r="45" fill="#3498db"/>
+                            <circle cx="35" cy="40" r="8" fill="white"/>
+                            <circle cx="65" cy="40" r="8" fill="white"/>
+                            <path d="M30 65 Q50 80 70 65" stroke="white" stroke-width="4" fill="none"/>
+                        </svg>
+                    </div>
+                    <h1>Cerebray</h1>
+                </div>
+                <div class="header-right">
+                    <div id="onlineCount">Online users: 0</div>
+                </div>
+            </div>
             <div class="video-container">
                 <div class="video-wrapper">
                     <video id="localVideo" autoplay muted playsinline></video>
@@ -42,7 +44,7 @@
             </div>
             
             <div class="controls">
-                <button id="startBtn" class="btn btn-primary">Start Video Chat</button>
+                <button id="startBtn" class="btn btn-primary">Start</button>
                 <button id="nextBtn" class="btn btn-secondary" disabled>Next</button>
                 <button id="endBtn" class="btn btn-danger" disabled>End Chat</button>
             </div>
@@ -79,6 +81,22 @@
         </button>
     </div>
     
+    <!-- Welcome Popup Modal -->
+    <div id="welcomeModal" class="modal show">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Welcome to Cerebray!</h2>
+                <span class="close" id="closeWelcome">&times;</span>
+            </div>
+            <div class="welcome-content">
+                <p>This is the Beta for a new social media that is on the rise!</p>
+                <p><strong>Please DO NOT BE NAUGHTY as this app is being monitored at all times!</strong></p>
+                <p>Also remember to be respectful!</p>
+                <p>Enjoy making new friends in various fields!</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Category Selection Modal -->
     <div id="categoryModal" class="modal">
         <div class="modal-content category-modal">
@@ -155,7 +173,6 @@
                 <input type="hidden" name="_subject" value="New Contact Form Submission from Video Chat App">
                 <input type="hidden" name="_captcha" value="false">
                 <input type="hidden" name="_template" value="table">
-                <input type="hidden" name="_next" value="http://localhost:3000/">
                 
                 <div class="form-group">
                     <label for="contactName">Name</label>

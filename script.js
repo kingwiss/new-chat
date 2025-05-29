@@ -42,6 +42,9 @@ class VideoChat {
         
         // Category modal event listeners
         this.initializeCategoryModal();
+        
+        // Welcome modal event listeners
+        this.initializeWelcomeModal();
     }
     
     initializeContactModal() {
@@ -88,12 +91,13 @@ class VideoChat {
         
         // Handle form submission
         contactForm.addEventListener('submit', (e) => {
-            // Validate and prepare for submission
+            e.preventDefault(); // Always prevent default form submission
+            // Validate and handle submission
             const isValid = this.handleContactFormSubmission();
-            if (!isValid) {
-                e.preventDefault();
+            if (isValid) {
+                // Submit form data via fetch to avoid redirect
+                this.submitContactForm();
             }
-            // If valid, allow natural form submission to FormSubmit.co
         });
         
         // Close modal with Escape key
@@ -115,18 +119,49 @@ class VideoChat {
             return false;
         }
         
-        // Hide the form and show thank you message
+        return true;
+    }
+    
+    async submitContactForm() {
+        const form = document.getElementById('contactForm');
+        const formData = new FormData(form);
+        
+        try {
+            // Submit to FormSubmit.co via fetch
+            const response = await fetch('https://formsubmit.co/fredwisseh@gmail.com', {
+                method: 'POST',
+                body: formData
+            });
+            
+            // Show thank you message regardless of response
+            this.showThankYouMessage();
+            
+        } catch (error) {
+            console.error('Form submission error:', error);
+            // Still show thank you message to user
+            this.showThankYouMessage();
+        }
+    }
+    
+    showThankYouMessage() {
         const contactForm = document.getElementById('contactForm');
         const thankYouMessage = document.getElementById('thankYouMessage');
         
+        // Hide the form and show thank you message
         contactForm.style.display = 'none';
         thankYouMessage.style.display = 'block';
         
         // Reset form for next use
         contactForm.reset();
         
-        // Allow form to submit naturally to FormSubmit.co
-        return true;
+        // Add event listener for close button
+        const closeThankYouBtn = document.getElementById('closeThankYou');
+        closeThankYouBtn.addEventListener('click', () => {
+            thankYouMessage.style.display = 'none';
+            contactForm.style.display = 'block';
+            const contactModal = document.getElementById('contactModal');
+            contactModal.classList.remove('show');
+        });
     }
     
     initializeCategoryModal() {
@@ -143,6 +178,35 @@ class VideoChat {
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && categoryModal.classList.contains('show')) {
                 this.closeCategoryModal();
+            }
+        });
+    }
+    
+    initializeWelcomeModal() {
+        const welcomeModal = document.getElementById('welcomeModal');
+        const closeWelcome = document.getElementById('closeWelcome');
+        
+        // Close welcome modal
+        const closeWelcomeFunc = () => {
+            welcomeModal.classList.remove('show');
+            setTimeout(() => {
+                welcomeModal.style.display = 'none';
+            }, 300);
+        };
+        
+        closeWelcome.addEventListener('click', closeWelcomeFunc);
+        
+        // Close modal when clicking outside
+        welcomeModal.addEventListener('click', (e) => {
+            if (e.target === welcomeModal) {
+                closeWelcomeFunc();
+            }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && welcomeModal.classList.contains('show')) {
+                closeWelcomeFunc();
             }
         });
     }

@@ -23,14 +23,32 @@ body {
 
 header {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 }
 
 .header-content {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
     gap: 16px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.header-right #onlineCount {
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 .logo {
@@ -48,7 +66,7 @@ header {
     transform: scale(1.05);
 }
 
-header h1 {
+header h1, .header-content h1 {
     color: #2c3e50;
     font-size: 2.8rem;
     font-weight: 700;
@@ -61,7 +79,7 @@ header h1 {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
     border-radius: 20px;
-    padding: 48px 40px;
+    padding: 20px 40px 48px 40px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.8);
     margin-bottom: 20px;
@@ -268,24 +286,25 @@ video {
 .controls {
     display: flex;
     justify-content: center;
-    gap: 16px;
-    margin-bottom: 32px;
-    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: nowrap;
 }
 
 .btn {
-    padding: 12px 24px;
+    padding: 8px 16px;
     border: none;
-    border-radius: 12px;
-    font-size: 0.9rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
-    min-width: 120px;
+    min-width: 90px;
     letter-spacing: 0.025em;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     position: relative;
     overflow: hidden;
+    white-space: nowrap;
 }
 
 .btn:hover {
@@ -360,48 +379,6 @@ video {
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {
-        padding: 15px;
-    }
-    
-    header h1 {
-        font-size: 2rem;
-    }
-    
-    .main-content {
-        padding: 30px 20px 25px 20px;
-        max-width: 95%;
-    }
-    
-    .video-container {
-        flex-direction: column;
-        gap: 20px;
-    }
-    
-    .video-wrapper {
-        width: 336px;
-        height: 336px;
-        min-width: 336px;
-        min-height: 336px;
-    }
-    
-    .chat-container {
-        max-width: 90%;
-        margin: 0 auto;
-    }
-    
-    .controls {
-        gap: 15px;
-    }
-    
-    .btn {
-        padding: 12px 25px;
-        font-size: 1rem;
-        min-width: 130px;
-    }
-}
-
-@media (max-width: 480px) {
-    .container {
         padding: 10px;
     }
     
@@ -410,26 +387,111 @@ video {
     }
     
     .main-content {
-        padding: 25px 15px 20px 15px;
+        padding: 20px 15px;
         max-width: 98%;
+        margin-bottom: 10px;
+    }
+    
+    .video-container {
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 20px;
     }
     
     .video-wrapper {
-        width: 300px;
-        height: 300px;
-        min-width: 300px;
-        min-height: 300px;
+        width: 280px;
+        height: 280px;
+        min-width: 280px;
+        min-height: 280px;
     }
     
     .chat-container {
         max-width: 95%;
         margin: 0 auto;
+        height: 90px;
+    }
+    
+    .chat-messages {
+        max-height: 50px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .controls {
+        gap: 6px;
+        margin-bottom: 15px;
+        flex-wrap: nowrap;
     }
     
     .btn {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-        min-width: 120px;
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        min-width: 80px;
+        border-radius: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 8px;
+    }
+    
+    header {
+        margin-bottom: 15px;
+    }
+    
+    header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .main-content {
+        padding: 15px 10px;
+        max-width: 99%;
+        margin-bottom: 5px;
+    }
+    
+    .video-wrapper {
+        width: 240px;
+        height: 240px;
+        min-width: 240px;
+        min-height: 240px;
+    }
+    
+    .chat-container {
+        max-width: 98%;
+        margin: 0 auto;
+        height: 80px;
+    }
+    
+    .chat-messages {
+        max-height: 40px;
+        padding: 4px 10px;
+        font-size: 0.8rem;
+    }
+    
+    .controls {
+        gap: 4px;
+        margin-bottom: 10px;
+        flex-wrap: nowrap;
+    }
+    
+    .btn {
+        padding: 5px 8px;
+        font-size: 0.75rem;
+        min-width: 70px;
+        border-radius: 6px;
+    }
+    
+    .status {
+        margin-bottom: 15px;
+    }
+    
+    #statusMessage {
+        font-size: 1rem;
+    }
+    
+    #onlineCount {
+        font-size: 0.85rem;
     }
 }
 
@@ -528,38 +590,40 @@ video {
 /* Responsive adjustments for floating buttons */
 @media (max-width: 768px) {
     .floating-buttons {
-        bottom: 15px;
-        left: 15px;
-    }
-    
-    .floating-btn {
-        padding: 10px 14px;
-        font-size: 0.8rem;
-        min-width: 100px;
-    }
-    
-    .floating-btn svg {
-        width: 18px;
-        height: 18px;
-    }
-}
-
-@media (max-width: 480px) {
-    .floating-buttons {
         bottom: 10px;
         left: 10px;
+        gap: 8px;
     }
     
     .floating-btn {
         padding: 8px 12px;
         font-size: 0.75rem;
-        min-width: 90px;
-        gap: 6px;
+        min-width: 85px;
     }
     
     .floating-btn svg {
         width: 16px;
         height: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .floating-buttons {
+        bottom: 8px;
+        left: 8px;
+        gap: 6px;
+    }
+    
+    .floating-btn {
+        padding: 6px 10px;
+        font-size: 0.7rem;
+        min-width: 75px;
+        gap: 4px;
+    }
+    
+    .floating-btn svg {
+        width: 14px;
+        height: 14px;
     }
 }
 
@@ -628,6 +692,26 @@ video {
 
 .contact-form {
     padding: 32px;
+}
+
+.welcome-content {
+    padding: 32px;
+}
+
+.welcome-content p {
+    margin-bottom: 16px;
+    color: #2c3e50;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.welcome-content p:last-child {
+    margin-bottom: 0;
+}
+
+.welcome-content strong {
+    color: #e74c3c;
+    font-weight: 600;
 }
 
 .form-group {
@@ -799,28 +883,12 @@ video {
 /* Responsive header */
 @media (max-width: 768px) {
     .header-content {
-        gap: 12px;
+        gap: 10px;
     }
     
     .logo svg {
-        width: 40px;
-        height: 40px;
-    }
-    
-    header h1 {
-        font-size: 2.2rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .header-content {
-        flex-direction: column;
-        gap: 8px;
-    }
-    
-    .logo svg {
-        width: 36px;
-        height: 36px;
+        width: 35px;
+        height: 35px;
     }
     
     header h1 {
@@ -828,26 +896,55 @@ video {
     }
 }
 
+@media (max-width: 480px) {
+    .header-content {
+        flex-direction: column;
+        gap: 6px;
+    }
+    
+    .logo svg {
+        width: 30px;
+        height: 30px;
+    }
+    
+    header h1 {
+        font-size: 1.5rem;
+    }
+}
+
 /* Responsive modal */
 @media (max-width: 768px) {
     .modal-content {
         width: 95%;
-        margin: 20px;
+        margin: 15px;
     }
     
     .modal-header {
-        padding: 20px 24px;
+        padding: 15px 20px;
     }
     
-    .contact-form {
-        padding: 24px;
+    .modal-header h2 {
+        font-size: 1.3rem;
+    }
+    
+    .contact-form, .category-form {
+        padding: 20px;
     }
     
     .form-actions {
         flex-direction: column;
+        gap: 8px;
     }
     
     .btn {
         width: 100%;
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .category-form .btn-primary {
+        min-width: auto;
+        padding: 12px 20px;
+        font-size: 1rem;
     }
 }
