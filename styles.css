@@ -67,13 +67,7 @@ header {
     transform: scale(1.05);
 }
 
-header h1, .header-content h1 {
-    color: #ffffff;
-    font-size: 2.8rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    margin: 0;
-}
+
 
 /* Main content wrapper with unified background */
 .main-content {
@@ -431,9 +425,7 @@ video {
         margin-bottom: 8px;
     }
     
-    header h1 {
-        font-size: 1.4rem;
-    }
+
     
     .main-content {
         padding: 12px 10px;
@@ -489,9 +481,7 @@ video {
         margin-bottom: 5px;
     }
     
-    header h1 {
-        font-size: 1.2rem;
-    }
+
     
     .main-content {
         padding: 10px 8px;
@@ -959,8 +949,15 @@ video {
         height: 24px;
     }
     
-    header h1 {
-        font-size: 0.7rem;
+    .controls {
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+    
+    .btn {
+        padding: 8px 16px !important;
+        font-size: 0.8rem !important;
+        min-width: 80px !important;
     }
     
     .status-container {
@@ -985,8 +982,15 @@ video {
         height: 20px;
     }
     
-    header h1 {
-        font-size: 0.6rem;
+    .controls {
+        gap: 4px;
+        margin-bottom: 6px;
+    }
+    
+    .btn {
+        padding: 6px 12px !important;
+        font-size: 0.75rem !important;
+        min-width: 70px !important;
     }
     
     .status-container {
