@@ -1006,14 +1006,15 @@ video {
 @media (max-width: 768px) {
     .main-content {
         padding: 10px;
-        height: calc(100vh - 20px);
+        height: calc(100vh - 80px);
+        margin-bottom: 20px;
     }
     
     .chat-container {
         width: 100%;
         max-width: none;
         margin: 0;
-        height: 100%;
+        height: calc(100% - 20px);
         position: relative;
         display: flex;
         flex-direction: column;
@@ -1035,6 +1036,7 @@ video {
         border-top: 1px solid rgba(255, 255, 255, 0.2);
         z-index: 10;
         margin-top: auto;
+        flex-shrink: 0;
     }
 }
 
