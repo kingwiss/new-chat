@@ -1006,15 +1006,15 @@ video {
 @media (max-width: 768px) {
     .main-content {
         padding: 10px;
-        height: calc(100vh - 80px);
-        margin-bottom: 20px;
+        height: calc(100vh - 120px);
+        margin-bottom: 40px;
     }
     
     .chat-container {
         width: 100%;
         max-width: none;
         margin: 0;
-        height: calc(100% - 20px);
+        height: calc(100% - 40px);
         position: relative;
         display: flex;
         flex-direction: column;
