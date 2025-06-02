@@ -180,6 +180,16 @@ io.on('connection', (socket) => {
         }
     });
     
+    // Handle stopping search for partners
+    socket.on('stop-search', () => {
+        const currentUser = users.get(socket.id);
+        if (currentUser) {
+            currentUser.isSearching = false;
+            waitingUsers.delete(socket.id);
+            console.log(`User ${socket.id} stopped searching`);
+        }
+    });
+    
     // Handle user disconnection from chat
     socket.on('disconnect-user', () => {
         const currentUser = users.get(socket.id);

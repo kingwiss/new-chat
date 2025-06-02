@@ -565,7 +565,11 @@ class VideoChat {
         this.statusMessage.textContent = 'Click "Start Video Chat" to begin';
         this.hideWaiting();
         
-        this.socket.emit('disconnect-user');
+        // Stop searching for partners and disconnect
+        if (this.socket) {
+            this.socket.emit('stop-search');
+            this.socket.emit('disconnect-user');
+        }
     }
     
     async handleUserConnected(data) {

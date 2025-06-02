@@ -115,8 +115,8 @@ body {
     position: absolute;
     top: 20px;
     right: 20px;
-    width: 200px;
-    height: 150px;
+    width: 150px;
+    height: 200px;
     background: #000;
     border-radius: 12px;
     overflow: hidden;
@@ -434,13 +434,13 @@ body {
 }
 
 .btn-danger {
-    background: linear-gradient(135deg, #fd79a8, #e84393);
+    background: linear-gradient(135deg, #e53e3e, #c53030);
     color: white;
 }
 
 .btn-danger:hover:not(:disabled) {
-    background: linear-gradient(135deg, #fd8bb4, #ea4c89);
-    box-shadow: 0 8px 24px rgba(253, 121, 168, 0.4);
+    background: linear-gradient(135deg, #f56565, #e53e3e);
+    box-shadow: 0 8px 24px rgba(229, 62, 62, 0.4);
 }
 
 .btn:disabled {
@@ -1090,13 +1090,13 @@ body {
     }
     
     .main-video-area {
-        margin-top: 50px;
+        margin-top: 0;
     }
     
     .pip-video {
-        width: 120px;
-        height: 90px;
-        top: 10px;
+        width: 90px;
+        height: 120px;
+        top: 60px;
         right: 10px;
     }
     
@@ -1110,15 +1110,19 @@ body {
     }
     
     .controls {
-        gap: 8px;
+        gap: 6px;
         margin-bottom: 12px;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        overflow-x: auto;
     }
     
     .btn {
-        min-width: 100px;
-        padding: 10px 16px;
-        font-size: 0.8rem;
+        width: 60px;
+        min-width: 60px;
+        padding: 6px 8px;
+        font-size: 0.7rem;
+        gap: 3px;
+        flex-shrink: 0;
     }
     
     .btn svg {
@@ -1171,21 +1175,25 @@ body {
     }
     
     .pip-video {
-        width: 100px;
-        height: 75px;
-        top: 8px;
+        width: 75px;
+        height: 100px;
+        top: 52px;
         right: 8px;
     }
     
     .controls {
-        gap: 6px;
+        gap: 2px;
+        overflow-x: auto;
+        padding: 0 4px;
     }
     
     .btn {
-        min-width: 80px;
-        padding: 8px 12px;
-        font-size: 0.75rem;
-        gap: 4px;
+        width: 60px;
+        min-width: 60px;
+        padding: 4px 6px;
+        font-size: 0.65rem;
+        gap: 2px;
+        flex-shrink: 0;
     }
     
     .btn svg {
