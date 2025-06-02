@@ -6,98 +6,72 @@ class VideoChat {
         this.peerConnection = null;
         this.isConnected = false;
         this.isSearching = false;
+        this.userPreferences = null;
         
-        // Check browser compatibility
-        this.checkBrowserCompatibility();
-        
-        // Initialize DOM elements with error checking
+        // Initialize DOM elements
         this.initializeDOMElements();
         
-        // Initialize event listeners and socket connection
-        if (this.elementsLoaded && this.isCompatible) {
+        // Initialize event listeners
+        if (this.elementsLoaded) {
             this.initializeEventListeners();
             this.connectSocket();
-        } else if (!this.elementsLoaded) {
-            console.error('Failed to initialize DOM elements. Video chat functionality will not work.');
-            // Add a visible error message for the user
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'error-message';
-            errorDiv.textContent = 'Failed to initialize video chat components. Please refresh the page and try again.';
-            document.querySelector('.main-content').prepend(errorDiv);
-        }
-    }
-    
-    checkBrowserCompatibility() {
-        this.isCompatible = true;
-        let errorMessage = '';
-        
-        // Check for WebRTC support
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            this.isCompatible = false;
-            errorMessage = 'Your browser does not support video chat functionality. Please use a modern browser like Chrome, Firefox, or Edge.';
-            console.error('getUserMedia not supported');
-        }
-        
-        // Check for RTCPeerConnection support
-        if (!window.RTCPeerConnection) {
-            this.isCompatible = false;
-            errorMessage = 'Your browser does not support WebRTC. Please use a modern browser like Chrome, Firefox, or Edge.';
-            console.error('RTCPeerConnection not supported');
-        }
-        
-        // Display error message if browser is not compatible
-        if (!this.isCompatible) {
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'error-message';
-            errorDiv.textContent = errorMessage;
-            
-            // Wait for DOM to be ready
-            document.addEventListener('DOMContentLoaded', () => {
-                const mainContent = document.querySelector('.main-content');
-                if (mainContent) {
-                    mainContent.prepend(errorDiv);
-                } else {
-                    document.body.prepend(errorDiv);
-                }
-            });
+            this.resetToInitialState();
         }
     }
     
     initializeDOMElements() {
         try {
+            // Video elements
             this.localVideo = document.getElementById('localVideo');
             this.remoteVideo = document.getElementById('remoteVideo');
+            
+            // Button elements
             this.startBtn = document.getElementById('startBtn');
             this.nextBtn = document.getElementById('nextBtn');
             this.endBtn = document.getElementById('endBtn');
-            this.statusMessage = document.getElementById('statusMessage') || document.querySelector('.chat-info');
-            this.onlineCount = document.getElementById('onlineCount');
-            this.waitingMessage = document.getElementById('waitingMessage');
-            this.floatingMessages = document.getElementById('floatingMessages');
-            this.chatInput = document.getElementById('chatInput');
             this.sendBtn = document.getElementById('sendBtn');
             
-            // Check if all required elements are loaded
-            this.elementsLoaded = !!(this.localVideo && this.remoteVideo && 
-                                   this.startBtn && this.nextBtn && this.endBtn && 
-                                   this.waitingMessage && this.floatingMessages && 
-                                   this.chatInput && this.sendBtn);
+            // Input elements
+            this.chatInput = document.getElementById('chatInput');
             
-            if (!this.elementsLoaded) {
-                console.error('Missing required DOM elements:', {
-                    localVideo: !!this.localVideo,
-                    remoteVideo: !!this.remoteVideo,
-                    startBtn: !!this.startBtn,
-                    nextBtn: !!this.nextBtn,
-                    endBtn: !!this.endBtn,
-                    statusMessage: !!this.statusMessage,
-                    waitingMessage: !!this.waitingMessage,
-                    floatingMessages: !!this.floatingMessages,
-                    chatInput: !!this.chatInput,
-                    sendBtn: !!this.sendBtn
-                });
-            } else {
+            // Status elements
+            this.statusMessage = document.getElementById('statusMessage');
+            this.waitingMessage = document.getElementById('waitingMessage');
+            this.chatMessages = document.getElementById('chatMessages');
+            
+            // Video labels
+            this.localVideoLabel = document.getElementById('localVideoLabel');
+            this.remoteVideoLabel = document.getElementById('remoteVideoLabel');
+            
+            // Debug each element
+            console.log('DOM Elements Check:');
+            console.log('localVideo:', this.localVideo);
+            console.log('remoteVideo:', this.remoteVideo);
+            console.log('startBtn:', this.startBtn);
+            console.log('nextBtn:', this.nextBtn);
+            console.log('endBtn:', this.endBtn);
+            console.log('sendBtn:', this.sendBtn);
+            console.log('chatInput:', this.chatInput);
+            console.log('statusMessage:', this.statusMessage);
+            
+            // Check if all elements are loaded
+            const requiredElements = [
+                this.localVideo, this.remoteVideo, this.startBtn, this.nextBtn, 
+                this.endBtn, this.sendBtn, this.chatInput, this.statusMessage
+            ];
+            
+            this.elementsLoaded = requiredElements.every(element => element !== null);
+            
+            if (this.elementsLoaded) {
                 console.log('All DOM elements loaded successfully');
+            } else {
+                console.error('Some DOM elements failed to load');
+                requiredElements.forEach((element, index) => {
+                    const elementNames = ['localVideo', 'remoteVideo', 'startBtn', 'nextBtn', 'endBtn', 'sendBtn', 'chatInput', 'statusMessage'];
+                    if (!element) {
+                        console.error(`Missing element: ${elementNames[index]}`);
+                    }
+                });
             }
         } catch (error) {
             console.error('Error initializing DOM elements:', error);
@@ -105,32 +79,36 @@ class VideoChat {
         }
     }
     
-    updateStatusMessage(message, type = 'info') {
-        if (this.statusMessage) {
-            this.statusMessage.textContent = message;
-            
-            // Remove existing status classes
-            this.statusMessage.classList.remove('error', 'success', 'info');
-            
-            // Add new status class
-            if (type === 'error') {
-                this.statusMessage.classList.add('error');
-            } else if (type === 'success') {
-                this.statusMessage.classList.add('success');
-            }
-            
-            console.log(`Status: ${type} - ${message}`);
-        } else {
-            console.log(`Status message element not found. ${type}: ${message}`);
-        }
-    }
-    
     initializeEventListeners() {
-        this.startBtn.addEventListener('click', () => this.showCategoryModal());
-        this.nextBtn.addEventListener('click', () => this.nextUser());
-        this.endBtn.addEventListener('click', () => this.endChat());
+        // Start button
+        this.startBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('Start button clicked');
+            console.log('Elements loaded:', this.elementsLoaded);
+            console.log('Start button element:', this.startBtn);
+            console.log('Category modal element:', document.getElementById('categoryModal'));
+            this.showCategoryModal();
+        });
         
-        // Chat event listeners
+        // Next button
+        this.nextBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!this.nextBtn.disabled) {
+                console.log('Next button clicked');
+                this.nextUser();
+            }
+        });
+        
+        // End button
+        this.endBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!this.endBtn.disabled) {
+                console.log('End button clicked');
+                this.endChat();
+            }
+        });
+        
+        // Chat functionality
         this.sendBtn.addEventListener('click', () => this.sendMessage());
         this.chatInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -139,374 +117,130 @@ class VideoChat {
             }
         });
         
-        // Contact modal event listeners
-        this.initializeContactModal();
-        
-        // Category modal event listeners
+        // Initialize modals
         this.initializeCategoryModal();
-        
-        // Welcome modal event listeners
+        this.initializeContactModal();
         this.initializeWelcomeModal();
     }
     
-    initializeContactModal() {
-        const contactBtn = document.getElementById('contactBtn');
-        const contactModal = document.getElementById('contactModal');
-        const closeModal = document.getElementById('closeModal');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const contactForm = document.getElementById('contactForm');
+    resetToInitialState() {
+        console.log('Resetting to initial state');
         
-        // Open modal
-        contactBtn.addEventListener('click', () => {
-            contactModal.classList.add('show');
-            contactModal.style.display = 'flex';
-        });
+        // Enable start button
+        this.startBtn.disabled = false;
+        this.startBtn.removeAttribute('disabled');
+        this.startBtn.style.pointerEvents = 'auto';
+        this.startBtn.style.opacity = '1';
+        this.startBtn.style.cursor = 'pointer';
         
-        // Close modal functions
-        const closeModalFunc = () => {
-            // Reset modal view to show form
-            const contactForm = document.getElementById('contactForm');
-            const thankYouMessage = document.getElementById('thankYouMessage');
-            
-            contactForm.style.display = 'block';
-            thankYouMessage.style.display = 'none';
-            
-            contactModal.classList.remove('show');
-            setTimeout(() => {
-                contactModal.style.display = 'none';
-            }, 300);
-        };
+        // Disable other buttons
+        this.nextBtn.disabled = true;
+        this.nextBtn.setAttribute('disabled', 'true');
+        this.endBtn.disabled = true;
+        this.endBtn.setAttribute('disabled', 'true');
         
-        closeModal.addEventListener('click', closeModalFunc);
-        cancelBtn.addEventListener('click', closeModalFunc);
+        // Disable chat
+        this.chatInput.disabled = true;
+        this.sendBtn.disabled = true;
         
-        // Handle thank you close button
-        const closeThankYou = document.getElementById('closeThankYou');
-        closeThankYou.addEventListener('click', closeModalFunc);
+        // Reset status
+        this.statusMessage.textContent = 'Click "Start Chat" to begin';
+        this.hideWaiting();
         
-        // Close modal when clicking outside
-        contactModal.addEventListener('click', (e) => {
-            if (e.target === contactModal) {
-                closeModalFunc();
-            }
-        });
+        // Clear videos
+        this.localVideo.srcObject = null;
+        this.remoteVideo.srcObject = null;
         
-        // Handle form submission
-        contactForm.addEventListener('submit', (e) => {
-            e.preventDefault(); // Always prevent default form submission
-            // Validate and handle submission
-            const isValid = this.handleContactFormSubmission();
-            if (isValid) {
-                // Submit form data via fetch to avoid redirect
-                this.submitContactForm();
-            }
-        });
+        // Reset labels
+        this.resetVideoLabels();
         
-        // Close modal with Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && contactModal.classList.contains('show')) {
-                closeModalFunc();
-            }
-        });
+        console.log('Initial state set - Start button enabled, others disabled');
     }
     
-    handleContactFormSubmission() {
-        // Validate form fields
-        const name = document.getElementById('contactName').value;
-        const email = document.getElementById('contactEmail').value;
-        const message = document.getElementById('contactMessage').value;
+    setActiveState() {
+        console.log('Setting active chat state');
         
-        if (!name || !email || !message) {
-            alert('Please fill in all fields.');
-            return false;
-        }
+        // Disable start button
+        this.startBtn.disabled = true;
+        this.startBtn.setAttribute('disabled', 'true');
         
-        return true;
-    }
-    
-    async submitContactForm() {
-        const form = document.getElementById('contactForm');
-        const formData = new FormData(form);
+        // Enable next and end buttons
+        this.nextBtn.disabled = false;
+        this.nextBtn.removeAttribute('disabled');
+        this.endBtn.disabled = false;
+        this.endBtn.removeAttribute('disabled');
         
-        try {
-            // Submit to FormSubmit.co via fetch
-            const response = await fetch('https://formsubmit.co/fredwisseh@gmail.com', {
-                method: 'POST',
-                body: formData
-            });
-            
-            // Show thank you message regardless of response
-            this.showThankYouMessage();
-            
-        } catch (error) {
-            console.error('Form submission error:', error);
-            // Still show thank you message to user
-            this.showThankYouMessage();
-        }
-    }
-    
-    showThankYouMessage() {
-        const contactForm = document.getElementById('contactForm');
-        const thankYouMessage = document.getElementById('thankYouMessage');
+        // Enable chat
+        this.chatInput.disabled = false;
+        this.sendBtn.disabled = false;
         
-        // Hide the form and show thank you message
-        contactForm.style.display = 'none';
-        thankYouMessage.style.display = 'block';
-        
-        // Reset form for next use
-        contactForm.reset();
-        
-        // Add event listener for close button
-        const closeThankYouBtn = document.getElementById('closeThankYou');
-        closeThankYouBtn.addEventListener('click', () => {
-            thankYouMessage.style.display = 'none';
-            contactForm.style.display = 'block';
-            const contactModal = document.getElementById('contactModal');
-            contactModal.classList.remove('show');
-        });
-    }
-    
-    initializeCategoryModal() {
-        const categoryModal = document.getElementById('categoryModal');
-        const categoryForm = document.getElementById('categoryForm');
-        const closeCategoryModalBtn = document.getElementById('closeCategoryModal');
-        
-        // Handle form submission
-        categoryForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            console.log('Category form submitted');
-            const success = this.handleCategoryFormSubmission();
-            if (!success) {
-                console.log('Form submission failed validation');
-            }
-        });
-        
-        // Close modal with close button
-        if (closeCategoryModalBtn) {
-            closeCategoryModalBtn.addEventListener('click', () => {
-                this.closeCategoryModal();
-            });
-        }
-        
-        // Close modal when clicking outside
-        categoryModal.addEventListener('click', (e) => {
-            if (e.target === categoryModal) {
-                this.closeCategoryModal();
-            }
-        });
-        
-        // Close modal with Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && categoryModal.classList.contains('show')) {
-                this.closeCategoryModal();
-            }
-        });
-    }
-    
-    initializeWelcomeModal() {
-        const welcomeModal = document.getElementById('welcomeModal');
-        const closeWelcome = document.getElementById('closeWelcome');
-        
-        // Close welcome modal
-        const closeWelcomeFunc = () => {
-            welcomeModal.classList.remove('show');
-            setTimeout(() => {
-                welcomeModal.style.display = 'none';
-            }, 300);
-        };
-        
-        closeWelcome.addEventListener('click', closeWelcomeFunc);
-        
-        // Close modal when clicking outside
-        welcomeModal.addEventListener('click', (e) => {
-            if (e.target === welcomeModal) {
-                closeWelcomeFunc();
-            }
-        });
-        
-        // Close modal with Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && welcomeModal.classList.contains('show')) {
-                closeWelcomeFunc();
-            }
-        });
-    }
-    
-    showCategoryModal() {
-        const categoryModal = document.getElementById('categoryModal');
-        categoryModal.classList.add('show');
-        categoryModal.style.display = 'flex';
-    }
-    
-    closeCategoryModal() {
-        const categoryModal = document.getElementById('categoryModal');
-        categoryModal.classList.remove('show');
-        setTimeout(() => {
-            categoryModal.style.display = 'none';
-        }, 300);
-    }
-    
-    handleCategoryFormSubmission() {
-        console.log('Form submission started');
-        
-        const category = document.getElementById('categorySelect').value;
-        const userGender = document.getElementById('userGender').value;
-        const preferredGender = document.getElementById('preferredGender').value;
-        const preferredCategory = document.getElementById('preferredCategory').value;
-        
-        console.log('Form values:', { category, userGender, preferredGender, preferredCategory });
-        
-        // Validate all fields are selected
-        if (!category || !userGender || !preferredGender || !preferredCategory) {
-            alert('Please fill in all fields before continuing.');
-            console.log('Validation failed - missing fields');
-            return false;
-        }
-        
-        // Handle "same" category preference
-        let finalPreferredCategory = preferredCategory;
-        if (preferredCategory === 'same') {
-            finalPreferredCategory = category;
-        }
-        
-        // Store user preferences (you can send these to server later)
-        this.userPreferences = {
-            category,
-            userGender,
-            preferredGender,
-            preferredCategory: finalPreferredCategory
-        };
-        
-        console.log('User preferences set:', this.userPreferences);
-        
-        // Close modal and start video chat
-        this.closeCategoryModal();
-        console.log('Starting video chat...');
-        this.startVideoChat();
-        
-        return true;
-    }
-    
-    connectSocket() {
-        this.socket = io();
-        
-        this.socket.on('connect', () => {
-            console.log('Connected to server');
-        });
-        
-        this.socket.on('online-count', (count) => {
-            this.onlineCount.textContent = `Online users: ${count}`;
-        });
-        
-        this.socket.on('user-connected', (data) => {
-            console.log('User connected:', data);
-            this.handleUserConnected(data);
-        });
-        
-        this.socket.on('user-disconnected', () => {
-            console.log('User disconnected');
-            this.handleUserDisconnected();
-        });
-        
-        this.socket.on('offer', (offer) => {
-            console.log('Received offer');
-            this.handleOffer(offer);
-        });
-        
-        this.socket.on('answer', (answer) => {
-            console.log('Received answer');
-            this.handleAnswer(answer);
-        });
-        
-        this.socket.on('ice-candidate', (candidate) => {
-            console.log('Received ICE candidate');
-            this.handleIceCandidate(candidate);
-        });
-        
-        this.socket.on('searching', () => {
-            this.showSearching();
-        });
-        
-        this.socket.on('no-users', () => {
-            this.showWaiting();
-        });
-        
-        this.socket.on('chat-message', (data) => {
-            this.displayMessage(data.message, false);
-        });
+        console.log('Active state set - Next and End buttons enabled');
     }
     
     async startVideoChat() {
-        console.log('startVideoChat called');
+        console.log('Starting video chat');
         
         try {
-            console.log('Requesting camera access...');
-            this.updateStatusMessage('Accessing camera...', 'info');
-            
-            // Check if getUserMedia is supported
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                throw new Error('getUserMedia is not supported in this browser');
-            }
-            
+            // Get user media
             this.localStream = await navigator.mediaDevices.getUserMedia({
-                video: { 
-                    width: { ideal: 640 }, 
-                    height: { ideal: 640 }, 
-                    facingMode: 'user' 
-                },
+                video: { width: { ideal: 640 }, height: { ideal: 640 }, facingMode: 'user' },
                 audio: true
             });
             
-            console.log('Camera access granted, setting up video...');
             this.localVideo.srcObject = this.localStream;
             
-            // Wait for video to load
-            await new Promise((resolve) => {
-                this.localVideo.onloadedmetadata = () => {
-                    this.localVideo.play();
-                    resolve();
-                };
-            });
+            // Set active state
+            this.setActiveState();
             
-            console.log('Video setup complete');
+            // Update status
+            this.statusMessage.textContent = 'Looking for someone to chat with...';
+            this.showWaiting();
             
-            this.startBtn.disabled = true;
-            this.nextBtn.disabled = false;
-            this.endBtn.disabled = false;
-            
-            this.updateStatusMessage('Looking for someone to chat with...', 'success');
-             this.showWaiting();
-            
-            // Update local video label immediately with user's own info
-            this.updateLocalVideoLabel();
-            
-            // Send user preferences with find-user request
-            console.log('Emitting find-user event with preferences:', this.userPreferences);
+            // Start searching
             this.socket.emit('find-user', this.userPreferences);
             
         } catch (error) {
-            console.error('Error accessing media devices:', error);
-            
-            let errorMessage = 'Error accessing camera. ';
-            
-            if (error.name === 'NotAllowedError') {
-                errorMessage += 'Please allow camera access and try again.';
-            } else if (error.name === 'NotFoundError') {
-                errorMessage += 'No camera found. Please connect a camera and try again.';
-            } else if (error.name === 'NotReadableError') {
-                errorMessage += 'Camera is already in use by another application.';
-            } else {
-                errorMessage += error.message || 'Please check your camera settings and try again.';
-            }
-            
-            this.updateStatusMessage(errorMessage, 'error');
-             
-             // Re-enable start button so user can try again
-             this.startBtn.disabled = false;
+            console.error('Error starting video chat:', error);
+            this.statusMessage.textContent = 'Error accessing camera. Please check permissions.';
+            this.resetToInitialState();
         }
     }
     
-    async nextUser() {
+    endChat() {
+        console.log('Ending chat');
+        
+        // Stop all media streams
+        if (this.localStream) {
+            this.localStream.getTracks().forEach(track => track.stop());
+            this.localStream = null;
+        }
+        
+        // Close peer connection
+        if (this.peerConnection) {
+            this.peerConnection.close();
+            this.peerConnection = null;
+        }
+        
+        // Reset connection states
+        this.isConnected = false;
+        this.isSearching = false;
+        
+        // Clear chat
+        this.clearChat();
+        
+        // Disconnect from socket
+        if (this.socket) {
+            this.socket.emit('stop-search');
+            this.socket.emit('disconnect-user');
+        }
+        
+        // Reset to initial state
+        this.resetToInitialState();
+        
+        console.log('Chat ended successfully');
+    }
+    
+    nextUser() {
         if (this.isSearching) return;
         
         this.isSearching = true;
@@ -519,10 +253,7 @@ class VideoChat {
         
         this.remoteVideo.srcObject = null;
         this.isConnected = false;
-        this.disableChat();
         this.clearChat();
-        
-        // Reset video labels when looking for next user
         this.resetVideoLabels();
         
         this.statusMessage.textContent = 'Looking for next person...';
@@ -536,48 +267,70 @@ class VideoChat {
         }, 2000);
     }
     
-    endChat() {
-        if (this.localStream) {
-            this.localStream.getTracks().forEach(track => track.stop());
-            this.localStream = null;
-        }
+    // Socket connection
+    connectSocket() {
+        this.socket = io();
         
-        if (this.peerConnection) {
-            this.peerConnection.close();
-            this.peerConnection = null;
-        }
+        this.socket.on('user-connected', (data) => {
+            console.log('User connected:', data);
+            this.handleUserConnected(data);
+        });
         
-        this.localVideo.srcObject = null;
-        this.remoteVideo.srcObject = null;
+        this.socket.on('offer', async (offer) => {
+            console.log('Received offer');
+            await this.handleOffer(offer);
+        });
         
-        // Reset video labels when ending chat
-        this.resetVideoLabels();
+        this.socket.on('answer', async (answer) => {
+            console.log('Received answer');
+            await this.handleAnswer(answer);
+        });
         
-        this.startBtn.disabled = false;
-        this.nextBtn.disabled = true;
-        this.endBtn.disabled = true;
+        this.socket.on('ice-candidate', (candidate) => {
+            console.log('Received ICE candidate');
+            this.handleIceCandidate(candidate);
+        });
         
-        this.isConnected = false;
-        this.isSearching = false;
-        this.disableChat();
-        this.clearChat();
+        this.socket.on('user-disconnected', () => {
+            console.log('User disconnected');
+            this.handleUserDisconnected();
+        });
         
-        this.statusMessage.textContent = 'Click "Start Video Chat" to begin';
-        this.hideWaiting();
+        this.socket.on('message', (data) => {
+            this.displayMessage(data.message, 'received');
+        });
         
-        // Stop searching for partners and disconnect
-        if (this.socket) {
-            this.socket.emit('stop-search');
-            this.socket.emit('disconnect-user');
-        }
+        this.socket.on('no-users', () => {
+            this.statusMessage.textContent = 'No users available. Waiting for someone to join...';
+        });
+    }
+    
+    // WebRTC functions
+    async createPeerConnection() {
+        this.peerConnection = new RTCPeerConnection({
+            iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+        });
+        
+        this.localStream.getTracks().forEach(track => {
+            this.peerConnection.addTrack(track, this.localStream);
+        });
+        
+        this.peerConnection.ontrack = (event) => {
+            this.remoteVideo.srcObject = event.streams[0];
+            this.isConnected = true;
+            this.hideWaiting();
+            this.statusMessage.textContent = 'Connected! You can now chat.';
+        };
+        
+        this.peerConnection.onicecandidate = (event) => {
+            if (event.candidate) {
+                this.socket.emit('ice-candidate', event.candidate);
+            }
+        };
     }
     
     async handleUserConnected(data) {
-        console.log('Creating peer connection');
         await this.createPeerConnection();
-        
-        // Update video labels with user information
-        this.updateVideoLabels(data.partnerInfo);
         
         if (data.shouldCreateOffer) {
             const offer = await this.peerConnection.createOffer();
@@ -586,70 +339,8 @@ class VideoChat {
         }
     }
     
-    updateLocalVideoLabel() {
-        // Check if userPreferences exists
-        if (!this.userPreferences) {
-            console.log('User preferences not set yet, skipping local label update');
-            return;
-        }
-        
-        // Update local video label with user's own info
-        const localLabel = document.querySelector('.video-wrapper:first-child .video-label');
-        if (localLabel) {
-            const userGenderLetter = this.userPreferences.userGender === 'male' ? 'M' : 'F';
-            localLabel.textContent = `You (${userGenderLetter}) - ${this.userPreferences.category}`;
-            console.log('Updated local label:', localLabel.textContent);
-        }
-    }
-    
-    updateVideoLabels(partnerInfo) {
-        // Update local video label with user's own info
-        this.updateLocalVideoLabel();
-        
-        // Update remote video label with partner's info
-        const remoteLabel = document.querySelector('.video-wrapper:last-child .video-label');
-        if (remoteLabel && partnerInfo) {
-            const partnerGenderLetter = partnerInfo.gender === 'male' ? 'M' : 'F';
-            remoteLabel.textContent = `Stranger (${partnerGenderLetter}) - ${partnerInfo.category}`;
-            console.log('Updated remote label:', remoteLabel.textContent);
-        }
-    }
-    
-    resetVideoLabels() {
-        // Reset labels to default
-        const localLabel = document.querySelector('.video-wrapper:first-child .video-label');
-        const remoteLabel = document.querySelector('.video-wrapper:last-child .video-label');
-        
-        localLabel.textContent = 'You';
-        remoteLabel.textContent = 'Stranger';
-    }
-
-    handleUserDisconnected() {
-        if (this.peerConnection) {
-            this.peerConnection.close();
-            this.peerConnection = null;
-        }
-        
-        this.remoteVideo.srcObject = null;
-        this.isConnected = false;
-        this.disableChat();
-        this.clearChat();
-        
-        // Reset video labels when user disconnects
-        this.resetVideoLabels();
-        
-        if (this.localStream) {
-            this.statusMessage.textContent = 'User disconnected. Looking for someone new...';
-            this.showWaiting();
-            this.socket.emit('find-user', this.userPreferences);
-        }
-    }
-    
     async handleOffer(offer) {
-        if (!this.peerConnection) {
-            await this.createPeerConnection();
-        }
-        
+        await this.createPeerConnection();
         await this.peerConnection.setRemoteDescription(offer);
         const answer = await this.peerConnection.createAnswer();
         await this.peerConnection.setLocalDescription(answer);
@@ -660,136 +351,164 @@ class VideoChat {
         await this.peerConnection.setRemoteDescription(answer);
     }
     
-    async handleIceCandidate(candidate) {
+    handleIceCandidate(candidate) {
         if (this.peerConnection) {
-            await this.peerConnection.addIceCandidate(candidate);
+            this.peerConnection.addIceCandidate(candidate);
         }
     }
     
-    async createPeerConnection() {
-        const configuration = {
-            iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' }
-            ]
-        };
-        
-        this.peerConnection = new RTCPeerConnection(configuration);
-        
-        // Add local stream to peer connection
-        this.localStream.getTracks().forEach(track => {
-            this.peerConnection.addTrack(track, this.localStream);
-        });
-        
-        // Handle remote stream
-        this.peerConnection.ontrack = (event) => {
-            console.log('Received remote stream');
-            this.remoteVideo.srcObject = event.streams[0];
-            this.isConnected = true;
-            this.statusMessage.textContent = 'Connected! Enjoy your chat.';
-            this.hideWaiting();
-            this.enableChat();
-        };
-        
-        // Handle ICE candidates
-        this.peerConnection.onicecandidate = (event) => {
-            if (event.candidate) {
-                this.socket.emit('ice-candidate', event.candidate);
-            }
-        };
-        
-        // Handle connection state changes
-        this.peerConnection.onconnectionstatechange = () => {
-            console.log('Connection state:', this.peerConnection.connectionState);
-            if (this.peerConnection.connectionState === 'disconnected' || 
-                this.peerConnection.connectionState === 'failed') {
-                this.handleUserDisconnected();
-            }
-        };
-    }
-    
-    showWaiting() {
-        this.waitingMessage.style.display = 'flex';
-        this.remoteVideo.parentElement.classList.add('connecting');
-    }
-    
-    hideWaiting() {
-        this.waitingMessage.style.display = 'none';
-        this.remoteVideo.parentElement.classList.remove('connecting');
-    }
-    
-    showSearching() {
-        this.statusMessage.textContent = 'Searching for users...';
+    handleUserDisconnected() {
+        this.remoteVideo.srcObject = null;
+        this.isConnected = false;
+        this.statusMessage.textContent = 'User disconnected. Looking for someone else...';
         this.showWaiting();
+        
+        if (this.peerConnection) {
+            this.peerConnection.close();
+            this.peerConnection = null;
+        }
+        
+        this.socket.emit('find-user', this.userPreferences);
     }
     
+    // Chat functions
     sendMessage() {
         const message = this.chatInput.value.trim();
         if (message && this.isConnected) {
-            this.socket.emit('chat-message', { message });
-            this.displayMessage(message, true);
+            this.socket.emit('message', message);
+            this.displayMessage(message, 'sent');
             this.chatInput.value = '';
         }
     }
     
-    displayMessage(message, isOwn) {
+    displayMessage(message, type) {
         const messageDiv = document.createElement('div');
-        messageDiv.className = `floating-message ${isOwn ? 'own' : 'other'}`;
+        messageDiv.className = `message ${type}`;
         messageDiv.textContent = message;
-        
-        // Position the message randomly on the screen
-        const containerRect = this.floatingMessages.getBoundingClientRect();
-        const maxX = containerRect.width - 300; // Account for message width
-        const maxY = containerRect.height - 100; // Account for message height
-        
-        const randomX = Math.random() * Math.max(maxX, 100);
-        const randomY = Math.random() * Math.max(maxY, 100);
-        
-        messageDiv.style.left = randomX + 'px';
-        messageDiv.style.top = randomY + 'px';
-        
-        this.floatingMessages.appendChild(messageDiv);
-        
-        // Remove the message after animation completes
-        setTimeout(() => {
-            if (messageDiv.parentNode) {
-                messageDiv.remove();
-            }
-        }, 8000);
-        
-        // Clean up old messages to prevent memory issues
-        this.cleanupOldMessages();
-    }
-    
-    enableChat() {
-        this.chatInput.disabled = false;
-        this.sendBtn.disabled = false;
-        this.chatInput.placeholder = 'Type a message...';
-    }
-    
-    disableChat() {
-        this.chatInput.disabled = true;
-        this.sendBtn.disabled = true;
-        this.chatInput.placeholder = 'Connect to start chatting...';
-        this.chatInput.value = '';
+        this.chatMessages.appendChild(messageDiv);
+        this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
     }
     
     clearChat() {
-        this.floatingMessages.innerHTML = '';
+        if (this.chatMessages) {
+            this.chatMessages.innerHTML = '';
+        }
     }
     
-    cleanupOldMessages() {
-        const messages = this.floatingMessages.querySelectorAll('.floating-message');
-        if (messages.length > 10) {
-            // Remove oldest messages if we have too many
-            for (let i = 0; i < messages.length - 10; i++) {
-                messages[i].remove();
-            }
+    // UI helper functions
+    showWaiting() {
+        if (this.waitingMessage) {
+            this.waitingMessage.style.display = 'block';
+        }
+    }
+    
+    hideWaiting() {
+        if (this.waitingMessage) {
+            this.waitingMessage.style.display = 'none';
+        }
+    }
+    
+    resetVideoLabels() {
+        if (this.localVideoLabel) {
+            this.localVideoLabel.textContent = 'You';
+        }
+        if (this.remoteVideoLabel) {
+            this.remoteVideoLabel.textContent = 'Waiting for connection...';
+        }
+    }
+    
+    // Modal functions
+    initializeCategoryModal() {
+        const modal = document.getElementById('categoryModal');
+        const closeBtn = document.getElementById('closeCategoryModal');
+        const categoryForm = document.getElementById('categoryForm');
+        
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+        }
+        
+        if (categoryForm) {
+            categoryForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                console.log('Category form submitted');
+                
+                // Get form values
+                const category = document.getElementById('categorySelect').value;
+                const userGender = document.getElementById('userGender').value;
+                const preferredGender = document.getElementById('preferredGender').value;
+                const preferredCategory = document.getElementById('preferredCategory').value;
+                
+                // Set user preferences
+                this.userPreferences = {
+                    category,
+                    userGender,
+                    preferredGender,
+                    preferredCategory
+                };
+                
+                console.log('User preferences:', this.userPreferences);
+                
+                // Hide modal and start chat
+                modal.style.display = 'none';
+                this.startVideoChat();
+            });
+        } else {
+            console.error('Category form not found');
+        }
+    }
+    
+    showCategoryModal() {
+        console.log('showCategoryModal called');
+        const modal = document.getElementById('categoryModal');
+        console.log('Modal element found:', modal);
+        if (modal) {
+            console.log('Setting modal display to flex');
+            modal.style.display = 'flex';
+            console.log('Modal display style after setting:', modal.style.display);
+        } else {
+            console.error('Category modal not found!');
+        }
+    }
+    
+    initializeContactModal() {
+        const contactBtn = document.getElementById('contactBtn');
+        const contactModal = document.getElementById('contactModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        
+        if (contactBtn && contactModal) {
+            contactBtn.addEventListener('click', () => {
+                contactModal.style.display = 'flex';
+            });
+        }
+        
+        if (closeModal && contactModal) {
+            closeModal.addEventListener('click', () => {
+                contactModal.style.display = 'none';
+            });
+        }
+        
+        if (cancelBtn && contactModal) {
+            cancelBtn.addEventListener('click', () => {
+                contactModal.style.display = 'none';
+            });
+        }
+    }
+    
+    initializeWelcomeModal() {
+        const welcomeModal = document.getElementById('welcomeModal');
+        
+        // Show welcome modal on first visit
+        if (welcomeModal && !localStorage.getItem('welcomeShown')) {
+            welcomeModal.style.display = 'flex';
         }
     }
 }
 
 // Initialize the video chat when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    new VideoChat();
+    console.log('Initializing VideoChat application');
+    window.videoChat = new VideoChat();
 });

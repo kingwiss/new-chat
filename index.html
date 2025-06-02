@@ -6,6 +6,7 @@
     <title>Cerebray</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%233498db'/%3E%3Ccircle cx='35' cy='40' r='8' fill='white'/%3E%3Ccircle cx='65' cy='40' r='8' fill='white'/%3E%3Cpath d='M30 65 Q50 80 70 65' stroke='white' stroke-width='4' fill='none'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="modal-styles.css">
 </head>
 <body>
     <div class="container">
@@ -39,6 +40,7 @@
             <!-- Primary video (remote) -->
             <div class="primary-video">
                 <video id="remoteVideo" autoplay playsinline></video>
+                <div id="statusMessage" class="status-message">Click "Start Chat" to begin</div>
                 <div id="waitingMessage" class="waiting-overlay">
                     <div class="waiting-content">
                         <div class="pulse-dot"></div>
@@ -60,19 +62,19 @@
         <!-- Bottom controls and input -->
         <div class="bottom-controls">
             <div class="controls">
-                <button id="startBtn" class="btn btn-primary">
+                <button id="startBtn" class="btn btn-primary" type="button">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                         <path d="M8 5V19L19 12L8 5Z" fill="currentColor"/>
                     </svg>
                     Start Chat
                 </button>
-                <button id="nextBtn" class="btn btn-secondary" disabled>
+                <button id="nextBtn" class="btn btn-secondary" type="button" disabled>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                         <path d="M12 2L22 12L12 22L10.59 20.59L18.17 13H2V11H18.17L10.59 3.41L12 2Z" fill="currentColor"/>
                     </svg>
                     Next
                 </button>
-                <button id="endBtn" class="btn btn-danger" disabled>
+                <button id="endBtn" class="btn btn-danger" type="button" disabled>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                         <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
                     </svg>
@@ -110,17 +112,21 @@
     </div>
     
     <!-- Welcome Popup Modal -->
-    <div id="welcomeModal" class="modal show">
-        <div class="modal-content">
-            <div class="modal-header">
+    <div id="welcomeModal" class="welcome-popup" style="display: none;">
+        <div class="welcome-overlay" onclick="closeWelcomePopup()"></div>
+        <div class="welcome-dialog">
+            <div class="welcome-header">
                 <h2>Welcome to Cerebray!</h2>
-                <span class="close" id="closeWelcome">&times;</span>
+                <button class="welcome-close-btn" onclick="closeWelcomePopup()">&times;</button>
             </div>
-            <div class="welcome-content">
+            <div class="welcome-body">
                 <p>This is the Beta for a new social media that is on the rise!</p>
                 <p><strong>Please DO NOT BE NAUGHTY as this app is being monitored at all times!</strong></p>
                 <p>Also remember to be respectful!</p>
                 <p>Enjoy making new friends in various fields!</p>
+                <div class="welcome-actions">
+                    <button type="button" class="welcome-btn" onclick="closeWelcomePopup()">Get Started</button>
+                </div>
             </div>
         </div>
     </div>
@@ -184,7 +190,7 @@
                     </select>
                 </div>
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Continue to Chat</button>
+                    <button type="submit" class="btn btn-primary">Continue</button>
                 </div>
             </form>
         </div>
@@ -233,6 +239,7 @@
     </div>
     
     <script src="/socket.io/socket.io.js"></script>
+    <script src="welcome-popup.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
