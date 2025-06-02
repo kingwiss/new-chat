@@ -73,14 +73,14 @@ class VideoChat {
             this.statusMessage = document.getElementById('statusMessage') || document.querySelector('.chat-info');
             this.onlineCount = document.getElementById('onlineCount');
             this.waitingMessage = document.getElementById('waitingMessage');
-            this.chatMessages = document.getElementById('chatMessages');
+            this.floatingMessages = document.getElementById('floatingMessages');
             this.chatInput = document.getElementById('chatInput');
             this.sendBtn = document.getElementById('sendBtn');
             
             // Check if all required elements are loaded
             this.elementsLoaded = !!(this.localVideo && this.remoteVideo && 
                                    this.startBtn && this.nextBtn && this.endBtn && 
-                                   this.waitingMessage && this.chatMessages && 
+                                   this.waitingMessage && this.floatingMessages && 
                                    this.chatInput && this.sendBtn);
             
             if (!this.elementsLoaded) {
@@ -92,7 +92,7 @@ class VideoChat {
                     endBtn: !!this.endBtn,
                     statusMessage: !!this.statusMessage,
                     waitingMessage: !!this.waitingMessage,
-                    chatMessages: !!this.chatMessages,
+                    floatingMessages: !!this.floatingMessages,
                     chatInput: !!this.chatInput,
                     sendBtn: !!this.sendBtn
                 });
@@ -705,7 +705,7 @@ class VideoChat {
     }
     
     showWaiting() {
-        this.waitingMessage.style.display = 'block';
+        this.waitingMessage.style.display = 'flex';
         this.remoteVideo.parentElement.classList.add('connecting');
     }
     
@@ -730,23 +730,31 @@ class VideoChat {
     
     displayMessage(message, isOwn) {
         const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${isOwn ? 'own' : 'other'}`;
+        messageDiv.className = `floating-message ${isOwn ? 'own' : 'other'}`;
+        messageDiv.textContent = message;
         
-        const senderSpan = document.createElement('span');
-        senderSpan.className = 'message-sender';
-        senderSpan.textContent = isOwn ? 'You:' : 'Stranger:';
+        // Position the message randomly on the screen
+        const containerRect = this.floatingMessages.getBoundingClientRect();
+        const maxX = containerRect.width - 300; // Account for message width
+        const maxY = containerRect.height - 100; // Account for message height
         
-        messageDiv.appendChild(senderSpan);
-        messageDiv.appendChild(document.createTextNode(message));
+        const randomX = Math.random() * Math.max(maxX, 100);
+        const randomY = Math.random() * Math.max(maxY, 100);
         
-        // Remove info message if it exists
-        const infoMessage = this.chatMessages.querySelector('.chat-info');
-        if (infoMessage) {
-            infoMessage.remove();
-        }
+        messageDiv.style.left = randomX + 'px';
+        messageDiv.style.top = randomY + 'px';
         
-        this.chatMessages.appendChild(messageDiv);
-        this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+        this.floatingMessages.appendChild(messageDiv);
+        
+        // Remove the message after animation completes
+        setTimeout(() => {
+            if (messageDiv.parentNode) {
+                messageDiv.remove();
+            }
+        }, 8000);
+        
+        // Clean up old messages to prevent memory issues
+        this.cleanupOldMessages();
     }
     
     enableChat() {
@@ -763,7 +771,17 @@ class VideoChat {
     }
     
     clearChat() {
-        this.chatMessages.innerHTML = '<div class="chat-info">Start chatting with your partner!</div>';
+        this.floatingMessages.innerHTML = '';
+    }
+    
+    cleanupOldMessages() {
+        const messages = this.floatingMessages.querySelectorAll('.floating-message');
+        if (messages.length > 10) {
+            // Remove oldest messages if we have too many
+            for (let i = 0; i < messages.length - 10; i++) {
+                messages[i].remove();
+            }
+        }
     }
 }
 
