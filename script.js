@@ -124,7 +124,9 @@ class VideoChat {
     }
     
     resetToInitialState() {
-        console.log('Resetting to initial state');
+        // Reset UI
+        this.statusMessage.textContent = 'Click "Start" to begin';
+        this.hideWaiting();
         
         // Enable start button
         this.startBtn.disabled = false;
@@ -344,11 +346,20 @@ class VideoChat {
         await this.peerConnection.setRemoteDescription(offer);
         const answer = await this.peerConnection.createAnswer();
         await this.peerConnection.setLocalDescription(answer);
+        
+        // Update status and hide waiting message when processing an offer
+        this.statusMessage.textContent = 'Connection in progress...';
+        this.hideWaiting();
+        
         this.socket.emit('answer', answer);
     }
     
     async handleAnswer(answer) {
         await this.peerConnection.setRemoteDescription(answer);
+        
+        // Update status and hide waiting message when processing an answer
+        this.statusMessage.textContent = 'Connection in progress...';
+        this.hideWaiting();
     }
     
     handleIceCandidate(candidate) {
