@@ -195,6 +195,7 @@ class VideoChat {
             this.setActiveState();
             
             // Update status
+            this.statusMessage.style.display = 'block';
             this.statusMessage.textContent = 'Looking for someone to chat with...';
             this.showWaiting();
             
@@ -258,6 +259,7 @@ class VideoChat {
         this.clearChat();
         this.resetVideoLabels();
         
+        this.statusMessage.style.display = 'block';
         this.statusMessage.textContent = 'Looking for next person...';
         this.showWaiting();
         
@@ -321,7 +323,16 @@ class VideoChat {
             this.remoteVideo.srcObject = event.streams[0];
             this.isConnected = true;
             this.hideWaiting();
-            this.statusMessage.textContent = 'Connected! You can now chat.';
+            // Clear any previous status and set connected message
+            setTimeout(() => {
+                this.statusMessage.textContent = 'Connected! You can now chat.';
+                // Hide status message after 3 seconds when connected
+                setTimeout(() => {
+                    if (this.isConnected) {
+                        this.statusMessage.style.display = 'none';
+                    }
+                }, 3000);
+            }, 500);
         };
         
         this.peerConnection.onicecandidate = (event) => {
@@ -347,8 +358,8 @@ class VideoChat {
         const answer = await this.peerConnection.createAnswer();
         await this.peerConnection.setLocalDescription(answer);
         
-        // Update status and hide waiting message when processing an offer
-        this.statusMessage.textContent = 'Connection in progress...';
+        // Update status but don't show "Connection in progress" message
+        this.statusMessage.textContent = 'Establishing connection...';
         this.hideWaiting();
         
         this.socket.emit('answer', answer);
@@ -357,8 +368,8 @@ class VideoChat {
     async handleAnswer(answer) {
         await this.peerConnection.setRemoteDescription(answer);
         
-        // Update status and hide waiting message when processing an answer
-        this.statusMessage.textContent = 'Connection in progress...';
+        // Update status but don't show "Connection in progress" message
+        this.statusMessage.textContent = 'Establishing connection...';
         this.hideWaiting();
     }
     
@@ -371,6 +382,7 @@ class VideoChat {
     handleUserDisconnected() {
         this.remoteVideo.srcObject = null;
         this.isConnected = false;
+        this.statusMessage.style.display = 'block';
         this.statusMessage.textContent = 'User disconnected. Looking for someone else...';
         this.showWaiting();
         
