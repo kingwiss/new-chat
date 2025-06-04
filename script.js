@@ -526,6 +526,9 @@ class VideoChat {
         const contactModal = document.getElementById('contactModal');
         const closeModal = document.getElementById('closeModal');
         const cancelBtn = document.getElementById('cancelBtn');
+        const contactForm = document.getElementById('contactForm');
+        const thankYouMessage = document.getElementById('thankYouMessage');
+        const closeThankYou = document.getElementById('closeThankYou');
         
         if (contactBtn && contactModal) {
             contactBtn.addEventListener('click', () => {
@@ -542,6 +545,39 @@ class VideoChat {
         if (cancelBtn && contactModal) {
             cancelBtn.addEventListener('click', () => {
                 contactModal.style.display = 'none';
+            });
+        }
+        
+        if (contactForm) {
+            contactForm.addEventListener('submit', (e) => {
+                e.preventDefault(); // Prevent form from submitting normally
+                
+                // Get form data
+                const formData = new FormData(contactForm);
+                
+                // Send form data via fetch API
+                fetch('https://formsubmit.co/fredwisseh@gmail.com', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    // Hide the form and show thank you message
+                    contactForm.style.display = 'none';
+                    thankYouMessage.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error submitting form:', error);
+                });
+            });
+        }
+        
+        if (closeThankYou) {
+            closeThankYou.addEventListener('click', () => {
+                // Hide thank you message, show form again, and close modal
+                thankYouMessage.style.display = 'none';
+                contactForm.style.display = 'block';
+                contactModal.style.display = 'none';
+                contactForm.reset(); // Reset form fields
             });
         }
     }
