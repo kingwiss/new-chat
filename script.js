@@ -35,9 +35,10 @@ class VideoChat {
             this.chatInput = document.getElementById('chatInput');
             
             // Status elements
-            this.statusMessage = document.getElementById('statusMessage');
-            this.waitingMessage = document.getElementById('waitingMessage');
-            this.chatMessages = document.getElementById('chatMessages');
+        this.statusMessage = document.getElementById('statusMessage');
+        this.waitingMessage = document.getElementById('waitingMessage');
+        this.chatMessages = document.getElementById('chatMessages');
+        this.floatingMessages = document.getElementById('floatingMessages');
             
             // Video labels
             this.localVideoLabel = document.getElementById('localVideoLabel');
@@ -300,8 +301,8 @@ class VideoChat {
             this.handleUserDisconnected();
         });
         
-        this.socket.on('message', (data) => {
-            this.displayMessage(data.message, 'received');
+        this.socket.on('chat-message', (data) => {
+            this.displayMessage(data, 'received');
         });
         
         this.socket.on('no-users', () => {
@@ -398,23 +399,48 @@ class VideoChat {
     sendMessage() {
         const message = this.chatInput.value.trim();
         if (message && this.isConnected) {
-            this.socket.emit('message', message);
+            this.socket.emit('chat-message', message);
             this.displayMessage(message, 'sent');
             this.chatInput.value = '';
         }
     }
     
     displayMessage(message, type) {
+        // Create floating message element
         const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${type}`;
+        messageDiv.className = `floating-message ${type === 'sent' ? 'own' : 'other'}`;
         messageDiv.textContent = message;
-        this.chatMessages.appendChild(messageDiv);
-        this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+        
+        // Position the message randomly on screen
+        const randomX = Math.random() * 60 + 10; // 10% to 70% from left
+        const randomY = Math.random() * 40 + 20; // 20% to 60% from top
+        
+        messageDiv.style.left = randomX + '%';
+        messageDiv.style.top = randomY + '%';
+        
+        // Add to floating messages container
+        this.floatingMessages.appendChild(messageDiv);
+        
+        // Remove message after animation completes (8 seconds)
+        setTimeout(() => {
+            if (messageDiv.parentNode) {
+                messageDiv.parentNode.removeChild(messageDiv);
+            }
+        }, 8000);
+        
+        // Limit number of messages on screen (remove oldest if more than 5)
+        const existingMessages = this.floatingMessages.children;
+        if (existingMessages.length > 5) {
+            this.floatingMessages.removeChild(existingMessages[0]);
+        }
     }
     
     clearChat() {
         if (this.chatMessages) {
             this.chatMessages.innerHTML = '';
+        }
+        if (this.floatingMessages) {
+            this.floatingMessages.innerHTML = '';
         }
     }
     
