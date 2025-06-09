@@ -91,6 +91,7 @@ body {
     position: relative;
     flex: 1;
     margin-top: 60px; /* Account for fixed header */
+    margin-bottom: 140px; /* Account for bottom controls (80px) + footer (60px) */
     overflow: hidden;
 }
 
@@ -585,7 +586,7 @@ body {
     
     .main-video-area {
         margin-top: 60px;
-        margin-bottom: 60px;
+        margin-bottom: 120px; /* Account for mobile bottom controls (70px) + footer (50px) */
     }
     
     .main-content {
@@ -767,7 +768,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    z-index: 1000;
+    z-index: 1001; /* Increased z-index to ensure visibility */
 }
 
 .floating-btn {
@@ -800,28 +801,26 @@ body {
 }
 
 .donation-btn {
-    background: linear-gradient(135deg, #f97316, #ea580c);
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
 }
 
 .donation-btn:hover {
-    background: linear-gradient(135deg, #ea580c, #dc2626);
+    background: linear-gradient(135deg, #ff5252 0%, #d63031 100%);
 }
 
 .contact-btn {
-    background: linear-gradient(135deg, #10b981, #059669);
-}
-
-.contact-btn:hover {
     background: linear-gradient(135deg, #059669, #047857);
 }
 
 .report-btn {
     background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    border: 2px solid #ff4757 !important; /* Make report button more visible */
 }
 
 .report-btn:hover {
     background: linear-gradient(135deg, #ff5252 0%, #d63031 100%);
     transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4) !important; /* Red glow on hover */
 }
 
 .floating-btn svg {
@@ -1301,7 +1300,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    z-index: 1000;
+    z-index: 1001; /* Increased z-index to ensure visibility */
 }
 
 .floating-btn {
@@ -1334,28 +1333,26 @@ body {
 }
 
 .donation-btn {
-    background: linear-gradient(135deg, #f97316, #ea580c);
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
 }
 
 .donation-btn:hover {
-    background: linear-gradient(135deg, #ea580c, #dc2626);
+    background: linear-gradient(135deg, #ff5252 0%, #d63031 100%);
 }
 
 .contact-btn {
-    background: linear-gradient(135deg, #10b981, #059669);
-}
-
-.contact-btn:hover {
     background: linear-gradient(135deg, #059669, #047857);
 }
 
 .report-btn {
     background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    border: 2px solid #ff4757 !important; /* Make report button more visible */
 }
 
 .report-btn:hover {
     background: linear-gradient(135deg, #ff5252 0%, #d63031 100%);
     transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4) !important; /* Red glow on hover */
 }
 
 .floating-btn svg {
@@ -1835,7 +1832,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    z-index: 1000;
+    z-index: 1001; /* Increased z-index to ensure visibility */
 }
 
 .floating-btn {
@@ -1868,28 +1865,26 @@ body {
 }
 
 .donation-btn {
-    background: linear-gradient(135deg, #f97316, #ea580c);
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
 }
 
 .donation-btn:hover {
-    background: linear-gradient(135deg, #ea580c, #dc2626);
+    background: linear-gradient(135deg, #ff5252 0%, #d63031 100%);
 }
 
 .contact-btn {
-    background: linear-gradient(135deg, #10b981, #059669);
-}
-
-.contact-btn:hover {
     background: linear-gradient(135deg, #059669, #047857);
 }
 
 .report-btn {
     background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    border: 2px solid #ff4757 !important; /* Make report button more visible */
 }
 
 .report-btn:hover {
     background: linear-gradient(135deg, #ff5252 0%, #d63031 100%);
     transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4) !important; /* Red glow on hover */
 }
 
 .floating-btn svg {
@@ -2422,6 +2417,10 @@ body {
     .header-right #onlineCount {
         font-size: 0.7rem;
         padding: 2px 6px;
+    }
+    
+    .main-video-area {
+        margin-bottom: 105px; /* Account for smaller mobile bottom controls (60px) + footer (45px) */
     }
     
     .pip-video {

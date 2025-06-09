@@ -325,6 +325,11 @@ class VideoChat {
             const reportBtn = document.getElementById('reportBtn');
             if (reportBtn) {
                 reportBtn.style.display = 'flex';
+                reportBtn.style.visibility = 'visible';
+                reportBtn.style.opacity = '1';
+                console.log('Report button should now be visible');
+            } else {
+                console.error('Report button element not found!');
             }
             
             // Start AI monitoring (capture frames periodically)
