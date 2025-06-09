@@ -826,6 +826,43 @@ body {
     box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4) !important; /* Red glow on hover */
 }
 
+/* Video Report Button - Small circular button over partner video */
+.video-report-btn {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    border: 2px solid #ff4757;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.video-report-btn:hover {
+    background: linear-gradient(135deg, #ff5252 0%, #d63031 100%);
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(255, 71, 87, 0.5);
+}
+
+.video-report-btn:active {
+    transform: scale(0.95);
+}
+
+.video-report-btn span {
+    font-size: 18px;
+    line-height: 1;
+}
+
 .floating-btn svg {
     flex-shrink: 0;
     width: 18px;
@@ -1361,6 +1398,43 @@ body {
     box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4) !important; /* Red glow on hover */
 }
 
+/* Video Report Button - Small circular button over partner video */
+.video-report-btn {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    border: 2px solid #ff4757;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.video-report-btn:hover {
+    background: linear-gradient(135deg, #ff5252 0%, #d63031 100%);
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(255, 71, 87, 0.5);
+}
+
+.video-report-btn:active {
+    transform: scale(0.95);
+}
+
+.video-report-btn span {
+    font-size: 18px;
+    line-height: 1;
+}
+
 .floating-btn svg {
     flex-shrink: 0;
     width: 18px;
@@ -1894,6 +1968,43 @@ body {
     background: linear-gradient(135deg, #ff5252 0%, #d63031 100%);
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4) !important; /* Red glow on hover */
+}
+
+/* Video Report Button - Small circular button over partner video */
+.video-report-btn {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    border: 2px solid #ff4757;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.video-report-btn:hover {
+    background: linear-gradient(135deg, #ff5252 0%, #d63031 100%);
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(255, 71, 87, 0.5);
+}
+
+.video-report-btn:active {
+    transform: scale(0.95);
+}
+
+.video-report-btn span {
+    font-size: 18px;
+    line-height: 1;
 }
 
 .floating-btn svg {
