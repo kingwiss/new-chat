@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Video Chat - Netlify Version</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="modal-styles.css">
+    <style>
+        .netlify-notice {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .netlify-notice h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.5em;
+        }
+        .netlify-notice p {
+            margin: 10px 0;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎥 Random Video Chat</h1>
+            <p>Connect with strangers around the world</p>
+            <div class="stats">
+                <span>👥 Online: <span id="onlineCount">0</span></span>
+            </div>
+        </header>
+
+        <div class="netlify-notice">
+            <h3>🚀 Netlify Deployment Ready!</h3>
+            <p>This version is configured for Netlify static hosting</p>
+            <p><strong>Note:</strong> Real-time video chat requires additional WebRTC signaling services</p>
+        </div>
+
+        <main>
+            <div class="video-container">
+                <div class="video-wrapper">
+                    <video id="localVideo" autoplay muted playsinline></video>
+                    <div class="video-label">You</div>
+                </div>
+                <div class="video-wrapper">
+                    <video id="remoteVideo" autoplay playsinline></video>
+                    <div class="video-label">Stranger</div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="startButton" class="btn btn-primary">Start Chat</button>
+                <button id="endButton" class="btn btn-danger" style="display: none;">End Chat</button>
+                <button id="nextButton" class="btn btn-secondary" style="display: none;">Next Partner</button>
+                <button id="reportButton" class="btn btn-warning" style="display: none;" onclick="showReportModal()">Report User</button>
+            </div>
+
+            <div id="status" class="status">
+                Welcome! Click "Start Chat" to begin connecting with strangers.
+            </div>
+        </main>
+
+        <footer>
+            <div class="footer-links">
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="terms-of-service.html">Terms of Service</a>
+                <a href="#" onclick="openDonationLink()">💝 Donate</a>
+            </div>
+            <p>&copy; 2024 Random Video Chat. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Report Modal -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideReportModal()">&times;</span>
+            <h2>Report User</h2>
+            <form id="reportForm">
+                <div class="report-reasons">
+                    <h3>Reason for reporting:</h3>
+                    <label><input type="radio" name="reason" value="inappropriate_content" required> Inappropriate Content</label>
+                    <label><input type="radio" name="reason" value="harassment" required> Harassment</label>
+                    <label><input type="radio" name="reason" value="spam" required> Spam</label>
+                    <label><input type="radio" name="reason" value="underage" required> Underage User</label>
+                    <label><input type="radio" name="reason" value="other" required> Other</label>
+                </div>
+                
+                <div class="report-details">
+                    <label for="details">Additional Details (optional):</label>
+                    <textarea id="details" name="details" rows="4" placeholder="Please provide any additional information..."></textarea>
+                </div>
+                
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-cancel" onclick="hideReportModal()">Cancel</button>
+                    <button type="button" class="btn btn-submit" onclick="submitReport()">Submit Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Deployment Information Modal -->
+    <div id="deploymentInfo" class="modal" style="display: block;">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('deploymentInfo').style.display='none'">&times;</span>
+            <h2>🚀 Netlify Deployment Guide</h2>
+            <div style="text-align: left; padding: 20px;">
+                <h3>✅ What's Ready:</h3>
+                <ul>
+                    <li>Static files configured for Netlify</li>
+                    <li>Serverless functions setup</li>
+                    <li>Build configuration (netlify.toml)</li>
+                    <li>CORS and security headers</li>
+                </ul>
+                
+                <h3>⚠️ Important Notes:</h3>
+                <ul>
+                    <li>Socket.IO requires persistent connections (not available on Netlify)</li>
+                    <li>Real-time video chat needs WebRTC signaling server</li>
+                    <li>Consider using Agora.io, Twilio Video, or similar services</li>
+                </ul>
+                
+                <h3>🔧 Deployment Steps:</h3>
+                <ol>
+                    <li>Push code to GitHub</li>
+                    <li>Connect repository to Netlify</li>
+                    <li>Set build command: <code>npm run build</code></li>
+                    <li>Set publish directory: <code>public</code></li>
+                    <li>Add environment variables in Netlify dashboard</li>
+                </ol>
+                
+                <h3>🌟 Alternative Platforms for Full Functionality:</h3>
+                <ul>
+                    <li><strong>Vercel:</strong> Supports serverless functions with WebSocket</li>
+                    <li><strong>Railway:</strong> Full Node.js hosting</li>
+                    <li><strong>Render:</strong> Free tier with WebSocket support</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="script-netlify.js"></script>
+    <script src="welcome-popup.js"></script>
+</body>
+</html>

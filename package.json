@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "build": "npm run copy-files",
+    "copy-files": "copy index-netlify.html public\\index.html && copy styles.css public\\ && copy script-netlify.js public\\script.js && copy modal-styles.css public\\ && copy welcome-popup.js public\\ && copy privacy-policy.html public\\ && copy terms-of-service.html public\\"
   },
   "keywords": [
     "video-chat",
@@ -21,7 +23,8 @@
     "socket.io": "^4.7.2",
     "form-data": "^4.0.0",
     "node-fetch": "^2.6.7",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "serverless-http": "^3.2.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
