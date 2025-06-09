@@ -815,6 +815,9 @@ body {
 .report-btn {
     background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
     border: 2px solid #ff4757 !important; /* Make report button more visible */
+    padding: 8px 12px; /* Smaller padding */
+    font-size: 0.8rem; /* Smaller font size */
+    min-width: 100px; /* Smaller minimum width */
 }
 
 .report-btn:hover {
@@ -1099,14 +1102,14 @@ body {
 }
 
 .thank-you-content h3 {
-    color: #2c3e50;
+    color: #ffffff;
     font-size: 1.5rem;
     margin-bottom: 16px;
     font-weight: 600;
 }
 
 .thank-you-content p {
-    color: #7f8c8d;
+    color: #e8f4fd;
     font-size: 1.1rem;
     margin-bottom: 24px;
     line-height: 1.5;
@@ -1347,6 +1350,9 @@ body {
 .report-btn {
     background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
     border: 2px solid #ff4757 !important; /* Make report button more visible */
+    padding: 8px 12px; /* Smaller padding */
+    font-size: 0.8rem; /* Smaller font size */
+    min-width: 100px; /* Smaller minimum width */
 }
 
 .report-btn:hover {
@@ -1631,14 +1637,14 @@ body {
 }
 
 .thank-you-content h3 {
-    color: #2c3e50;
+    color: #ffffff;
     font-size: 1.5rem;
     margin-bottom: 16px;
     font-weight: 600;
 }
 
 .thank-you-content p {
-    color: #7f8c8d;
+    color: #e8f4fd;
     font-size: 1.1rem;
     margin-bottom: 24px;
     line-height: 1.5;
@@ -1879,6 +1885,9 @@ body {
 .report-btn {
     background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
     border: 2px solid #ff4757 !important; /* Make report button more visible */
+    padding: 8px 12px; /* Smaller padding */
+    font-size: 0.8rem; /* Smaller font size */
+    min-width: 100px; /* Smaller minimum width */
 }
 
 .report-btn:hover {
@@ -2163,14 +2172,14 @@ body {
 }
 
 .thank-you-content h3 {
-    color: #2c3e50;
+    color: #ffffff;
     font-size: 1.5rem;
     margin-bottom: 16px;
     font-weight: 600;
 }
 
 .thank-you-content p {
-    color: #7f8c8d;
+    color: #e8f4fd;
     font-size: 1.1rem;
     margin-bottom: 24px;
     line-height: 1.5;

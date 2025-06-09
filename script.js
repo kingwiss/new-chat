@@ -460,6 +460,12 @@ class VideoChat {
         this.statusMessage.textContent = 'User disconnected. Looking for someone else...';
         this.showWaiting();
         
+        // Hide report button when user disconnects
+        const reportBtn = document.getElementById('reportBtn');
+        if (reportBtn) {
+            reportBtn.style.display = 'none';
+        }
+        
         if (this.peerConnection) {
             this.peerConnection.close();
             this.peerConnection = null;
