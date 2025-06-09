@@ -1,115 +1,174 @@
-# Random Video Chat
+# Cerebray Video Chat - AI-Powered Security
 
-A modern, responsive random video chat application similar to Omegle or ChatAlternative. Connect with random people around the world through video chat!
+A modern video chat application with advanced AI-based content moderation and security features.
 
-## Features
+## 🚀 Features
 
-- 🎥 **Real-time Video Chat** - High-quality video communication using WebRTC
-- 🔀 **Random Matching** - Get connected with random users instantly
-- 📱 **Responsive Design** - Works perfectly on all screen sizes
-- 🎨 **Modern UI** - Clean, appealing interface with smooth animations
-- ⚡ **Fast Switching** - Quickly move to the next person with one click
-- 🔒 **Secure** - No data storage, completely anonymous
+### Core Features
+- **Random Video Chat**: Connect with strangers worldwide
+- **Real-time Messaging**: Text chat alongside video
+- **Gender & Category Preferences**: Filter connections based on preferences
+- **Responsive Design**: Works on desktop and mobile devices
 
-## Quick Start
+### 🛡️ AI Security Features
+- **Real-time Content Moderation**: AI analyzes video frames for inappropriate content
+- **Smart Report System**: Users can report inappropriate behavior
+- **Automated Banning**: AI determines ban duration based on violation severity
+- **IP-based Bans**: Prevents banned users from creating new connections
+- **Multi-level Warnings**: Progressive enforcement system
+
+## 🔧 Setup Instructions
 
 ### Prerequisites
-- Node.js (version 14 or higher)
-- A modern web browser with WebRTC support
-- Webcam and microphone
+- Node.js (v14 or higher)
+- npm or yarn
+- Sightengine API account (for AI moderation)
 
 ### Installation
 
-1. **Install dependencies:**
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd cerebray-video-chat
+   ```
+
+2. **Install dependencies**
    ```bash
    npm install
    ```
 
-2. **Start the server:**
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Edit the `.env` file and add your Sightengine API credentials:
+   ```env
+   SIGHTENGINE_USER=your_sightengine_user_id
+   SIGHTENGINE_SECRET=your_sightengine_api_secret
+   PORT=3000
+   ```
+
+4. **Get Sightengine API Credentials**
+   - Visit [Sightengine.com](https://sightengine.com/)
+   - Sign up for a free account (2,000 API calls/month)
+   - Navigate to your dashboard
+   - Copy your API User ID and API Secret
+   - Add them to your `.env` file
+
+5. **Start the application**
    ```bash
    npm start
    ```
+   
+   For development with auto-restart:
+   ```bash
+   npm run dev
+   ```
 
-3. **Open your browser:**
-   Navigate to `http://localhost:3000`
+6. **Access the application**
+   Open your browser and go to `http://localhost:3000`
 
-### Development Mode
+## 🤖 AI Moderation System
 
-For development with auto-restart:
-```bash
-npm run dev
-```
+### How It Works
 
-## How to Use
+1. **Real-time Analysis**: Every 10 seconds, the system captures video frames and sends them to Sightengine AI for analysis
 
-1. **Start Video Chat** - Click the "Start Video Chat" button and allow camera/microphone access
-2. **Wait for Connection** - The app will automatically find and connect you with another user
-3. **Chat** - Enjoy your video conversation!
-4. **Next User** - Click "Next" to disconnect and find a new person
-5. **End Chat** - Click "End Chat" to stop the video chat completely
+2. **Content Detection**: The AI detects:
+   - Nudity and sexual content
+   - Violence and weapons
+   - Offensive gestures
+   - Gore and disturbing content
+   - Inappropriate behavior
 
-## Technical Details
+3. **Smart Reporting**: Users can report inappropriate behavior with specific categories:
+   - Inappropriate sexual behavior
+   - Nudity or explicit content
+   - Harassment or bullying
+   - Hate speech
+   - Violence or threats
+   - Spam or unwanted content
 
-### Frontend
-- **HTML5** - Semantic markup with video elements
-- **CSS3** - Modern styling with flexbox, gradients, and animations
-- **JavaScript (ES6+)** - WebRTC implementation with Socket.io client
+4. **Automated Actions**: Based on AI confidence and report history:
+   - **Warning**: Low-level violations get warnings
+   - **Temporary Ban**: Medium violations get 1-3 day bans
+   - **Week Ban**: High-confidence violations get 7-day bans
+   - **Immediate Disconnect**: Critical violations disconnect immediately
 
-### Backend
-- **Node.js** - Server runtime
-- **Express.js** - Web framework
-- **Socket.io** - Real-time communication for signaling
+### Report System Features
 
-### Key Features Implementation
+- **Report Button**: Appears during active chats (red warning icon)
+- **Cooldown Protection**: Prevents spam reporting (1-minute cooldown)
+- **AI Trigger**: Multiple reports automatically trigger AI analysis
+- **Real-time Feedback**: Users get immediate confirmation of report submission
 
-- **Perfect Square Videos** - CSS ensures video containers maintain square aspect ratio on all screen sizes
-- **Persistent UI Elements** - All buttons remain visible and functional at all times
-- **Responsive Design** - Adapts to mobile, tablet, and desktop screens
-- **WebRTC Signaling** - Handles offer/answer exchange and ICE candidates
-- **User Matching** - Efficient algorithm to pair waiting users
+### Ban System
 
-## Browser Compatibility
+- **IP-based Banning**: Prevents circumvention by creating new sessions
+- **Progressive Enforcement**: Repeat offenders get longer bans
+- **Automatic Unbanning**: Bans expire automatically
+- **Appeal Process**: Contact system for wrongful ban appeals
 
-- Chrome 60+
-- Firefox 55+
-- Safari 11+
-- Edge 79+
+## 🎯 Usage
 
-## Security Notes
+### For Users
 
-- All video/audio data is transmitted directly between users (peer-to-peer)
-- No video or audio data is stored on the server
-- Users are completely anonymous
-- HTTPS is recommended for production deployment
+1. **Starting a Chat**
+   - Click "Start Chat" to begin
+   - Allow camera and microphone permissions
+   - Set your preferences (optional)
+   - Wait for a connection
 
-## Deployment
+2. **During a Chat**
+   - Video and text chat are available
+   - Use "Next" to find a new partner
+   - Use "End Chat" to stop chatting
+   - **Report inappropriate behavior** using the red report button
 
-For production deployment:
+3. **Reporting Users**
+   - Click the red report button (⚠️) in the bottom-left corner
+   - Select the reason for reporting
+   - Add additional details (optional)
+   - Submit the report
+   - AI analysis will be triggered for serious reports
 
-1. Set the `PORT` environment variable
-2. Use a process manager like PM2
-3. Configure HTTPS with SSL certificates
-4. Consider using TURN servers for better connectivity
+## 🔒 Security Features
 
-## Troubleshooting
+- **Real-time AI Monitoring**: Continuous content analysis
+- **Progressive Enforcement**: Escalating consequences for violations
+- **IP-based Banning**: Prevents ban circumvention
+- **Report Cooldowns**: Prevents abuse of reporting system
+- **Encrypted Connections**: All communications are encrypted
+- **No Data Storage**: No personal data or chat logs are stored
 
-**Camera/Microphone Access Issues:**
-- Ensure you're using HTTPS (required for WebRTC in production)
-- Check browser permissions for camera and microphone
-- Try refreshing the page and allowing access again
+## 🚨 Moderation Policies
 
-**Connection Issues:**
-- Check your internet connection
-- Disable VPN if experiencing connectivity problems
-- Try using a different browser
+### Prohibited Content
+- Nudity or sexual content
+- Violence or threats
+- Harassment or bullying
+- Hate speech or discrimination
+- Illegal activities
+- Spam or unwanted solicitation
 
-**No Users Found:**
-- The app requires at least 2 users to be online simultaneously
-- Try again later when more users are online
+### Enforcement Actions
+1. **First Warning**: Educational message
+2. **Temporary Ban**: 1-3 days depending on severity
+3. **Extended Ban**: 7 days for serious violations
+4. **Permanent Ban**: For repeated serious violations
 
-## License
+## 🛠️ Technologies Used
 
-MIT License - feel free to use this project for learning or building your own video chat application!
+- **Backend**: Node.js, Express.js, Socket.IO
+- **Frontend**: HTML5, CSS3, JavaScript, WebRTC
+- **AI Moderation**: Sightengine API
+- **Security**: IP-based banning, Real-time monitoring
+- **Dependencies**: form-data, node-fetch, dotenv
+
+## 📄 License
+
+MIT License - see LICENSE file for details.
 
 ## Contributing
 

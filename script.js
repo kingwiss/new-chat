@@ -232,6 +232,15 @@ class VideoChat {
         // Clear chat
         this.clearChat();
         
+        // Hide report button when chat ends
+        const reportBtn = document.getElementById('reportBtn');
+        if (reportBtn) {
+            reportBtn.style.display = 'none';
+        }
+        
+        // Stop AI monitoring
+        this.stopAIMonitoring();
+        
         // Disconnect from socket
         if (this.socket) {
             this.socket.emit('stop-search');
@@ -301,8 +310,60 @@ class VideoChat {
             this.handleUserDisconnected();
         });
         
+        this.socket.on('partner-connected', (data) => {
+            this.isConnected = true;
+            this.partnerId = data.partnerId;
+            this.statusMessage.textContent = 'Connected! You can now start chatting.';
+            this.statusMessage.style.color = '#4CAF50';
+            this.nextBtn.style.display = 'inline-block';
+            this.endChatBtn.style.display = 'inline-block';
+            this.chatInput.style.display = 'block';
+            this.chatInput.focus();
+            
+            // Show report button when connected
+            const reportBtn = document.getElementById('reportBtn');
+            if (reportBtn) {
+                reportBtn.style.display = 'flex';
+            }
+            
+            // Start AI monitoring (capture frames periodically)
+            this.startAIMonitoring();
+        });
+        
         this.socket.on('chat-message', (data) => {
             this.displayMessage(data, 'received');
+        });
+        
+        // Handle AI moderation events
+        this.socket.on('user-banned', (data) => {
+            this.showBanNotification(data);
+            this.endChat();
+        });
+        
+        this.socket.on('partner-banned', (data) => {
+            this.showPartnerBannedNotification(data);
+            this.endChat();
+        });
+        
+        this.socket.on('violation-warning', (data) => {
+            this.showViolationWarning(data);
+        });
+        
+        this.socket.on('content-warning', (data) => {
+            this.showContentWarning(data);
+        });
+        
+        this.socket.on('being-analyzed', (data) => {
+            this.showAnalysisNotification(data);
+        });
+        
+        // Handle report responses
+        this.socket.on('report-success', (data) => {
+            this.showReportSuccess(data);
+        });
+        
+        this.socket.on('report-error', (data) => {
+            this.showReportError(data);
         });
         
         this.socket.on('no-users', () => {
@@ -589,6 +650,228 @@ class VideoChat {
         if (welcomeModal && !localStorage.getItem('welcomeShown')) {
             welcomeModal.style.display = 'flex';
         }
+    }
+    
+    showContactModal() {
+        document.getElementById('contactModal').style.display = 'block';
+    }
+
+    hideContactModal() {
+        document.getElementById('contactModal').style.display = 'none';
+    }
+    
+    // AI Monitoring Methods
+    startAIMonitoring() {
+        // Capture video frames every 10 seconds for AI analysis
+        this.aiMonitoringInterval = setInterval(() => {
+            this.captureAndAnalyzeFrame();
+        }, 10000);
+    }
+    
+    stopAIMonitoring() {
+        if (this.aiMonitoringInterval) {
+            clearInterval(this.aiMonitoringInterval);
+            this.aiMonitoringInterval = null;
+        }
+    }
+    
+    captureAndAnalyzeFrame() {
+        if (!this.isConnected || !this.localVideo.srcObject) return;
+        
+        try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = this.localVideo.videoWidth;
+            canvas.height = this.localVideo.videoHeight;
+            
+            ctx.drawImage(this.localVideo, 0, 0);
+            
+            // Convert to blob and send for analysis
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        this.socket.emit('analyze-frame', {
+                            frameData: reader.result,
+                            timestamp: Date.now()
+                        });
+                    };
+                    reader.readAsArrayBuffer(blob);
+                }
+            }, 'image/jpeg', 0.8);
+        } catch (error) {
+            console.error('Error capturing frame for AI analysis:', error);
+        }
+    }
+    
+    // Report functionality
+    showReportModal() {
+        if (!this.isConnected) {
+            this.showNotification('No active chat to report', 'error');
+            return;
+        }
+        document.getElementById('reportModal').style.display = 'block';
+    }
+    
+    hideReportModal() {
+        document.getElementById('reportModal').style.display = 'none';
+        // Clear form
+        const radioButtons = document.querySelectorAll('input[name="reportReason"]');
+        radioButtons.forEach(radio => radio.checked = false);
+        document.getElementById('reportDetails').value = '';
+    }
+    
+    submitReport() {
+        const selectedReason = document.querySelector('input[name="reportReason"]:checked');
+        if (!selectedReason) {
+            this.showNotification('Please select a reason for reporting', 'error');
+            return;
+        }
+        
+        const reason = selectedReason.value;
+        const details = document.getElementById('reportDetails').value;
+        
+        this.socket.emit('report-user', {
+            reportedUserId: this.partnerId,
+            reason: reason,
+            details: details,
+            timestamp: Date.now()
+        });
+        
+        this.hideReportModal();
+        this.showNotification('Report submitted. Thank you for helping keep our community safe.', 'success');
+    }
+    
+    // AI Moderation Event Handlers
+    showBanNotification(data) {
+        const message = `You have been banned for ${data.duration}. Reason: ${data.reason}`;
+        this.showNotification(message, 'error', 10000);
+    }
+    
+    showPartnerBannedNotification(data) {
+        this.showNotification(data.message, 'info', 5000);
+    }
+    
+    showViolationWarning(data) {
+        this.showNotification(data.message, 'warning', 8000);
+    }
+    
+    showContentWarning(data) {
+        this.showNotification(data.message, 'warning', 5000);
+    }
+    
+    showAnalysisNotification(data) {
+        this.showNotification(data.message, 'info', 3000);
+    }
+    
+    showReportSuccess(data) {
+        this.showNotification(data.message, 'success', 5000);
+    }
+    
+    showReportError(data) {
+        this.showNotification(data.message, 'error', 5000);
+    }
+    
+    // Enhanced notification system
+    showNotification(message, type = 'info', duration = 3000) {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.textContent = message;
+        
+        // Style the notification
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 10000;
+            max-width: 400px;
+            word-wrap: break-word;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease-out;
+        `;
+        
+        // Set background color based on type
+        switch (type) {
+            case 'success':
+                notification.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
+                break;
+            case 'error':
+                notification.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
+                break;
+            case 'warning':
+                notification.style.background = 'linear-gradient(135deg, #ff9800, #f57c00)';
+                break;
+            default:
+                notification.style.background = 'linear-gradient(135deg, #2196F3, #1976D2)';
+        }
+        
+        document.body.appendChild(notification);
+        
+        // Auto remove
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }
+        }, duration);
+    }
+}
+
+// Global functions for modal controls
+function showWelcomeModal() {
+    document.getElementById('welcomeModal').style.display = 'block';
+}
+
+function hideWelcomeModal() {
+    document.getElementById('welcomeModal').style.display = 'none';
+}
+
+function showCategoryModal() {
+    hideWelcomeModal();
+    document.getElementById('categoryModal').style.display = 'block';
+}
+
+function hideCategoryModal() {
+    document.getElementById('categoryModal').style.display = 'none';
+}
+
+function showContactModal() {
+    document.getElementById('contactModal').style.display = 'block';
+}
+
+function hideContactModal() {
+    document.getElementById('contactModal').style.display = 'none';
+}
+
+function showDonationModal() {
+    // Redirect to donation page or show donation modal
+    window.open('https://www.paypal.com/donate/?hosted_button_id=9ANJ4LSGD8UYC', '_blank');
+}
+
+// Report functionality global functions
+function reportUser() {
+    if (window.videoChat) {
+        window.videoChat.showReportModal();
+    }
+}
+
+function hideReportModal() {
+    if (window.videoChat) {
+        window.videoChat.hideReportModal();
+    }
+}
+
+function submitReport() {
+    if (window.videoChat) {
+        window.videoChat.submitReport();
     }
 }
 

@@ -100,18 +100,24 @@
     
     <!-- Floating buttons -->
     <div class="floating-buttons">
-        <a href="https://www.paypal.com/donate/?hosted_button_id=9ANJ4LSGD8UYC" target="_blank" rel="noopener noreferrer" class="floating-btn donation-btn" title="Donate">
+        <a href="#" class="floating-btn report-btn" onclick="reportUser()" id="reportBtn" style="display: none;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5C22 12.28 18.6 15.36 13.45 20.04L12 21.35Z" fill="currentColor"/>
+                <path d="M15.73 3H8.27L3 8.27v7.46L8.27 21h7.46L21 15.73V8.27L15.73 3zM12 17.3c-.72 0-1.3-.58-1.3-1.3 0-.72.58-1.3 1.3-1.3.72 0 1.3.58 1.3 1.3 0 .72-.58 1.3-1.3 1.3zm1-4.3h-2V7h2v6z" fill="currentColor"/>
+            </svg>
+            <span>Report</span>
+        </a>
+        <a href="#" class="floating-btn donation-btn" onclick="showDonationModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/>
             </svg>
             <span>Donate</span>
         </a>
-        <button class="floating-btn contact-btn" id="contactBtn" title="Contact Us">
+        <a href="#" class="floating-btn contact-btn" onclick="showContactModal()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20 4H4C2.9 4 2.01 4.9 2.01 6L2 18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 8L12 13L4 8V6L12 11L20 6V8Z" fill="currentColor"/>
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/>
             </svg>
             <span>Contact Us</span>
-        </button>
+        </a>
     </div>
     
     <!-- Welcome Popup Modal -->
@@ -237,6 +243,29 @@
                     <p>We will contact you shortly</p>
                     <button type="button" class="btn btn-primary" id="closeThankYou">Close</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideReportModal()">&times;</span>
+            <h2>Report User</h2>
+            <p>Please select the reason for reporting this user:</p>
+            <div class="report-reasons">
+                <label><input type="radio" name="reportReason" value="INAPPROPRIATE_SEXUAL_BEHAVIOR"> Inappropriate sexual behavior</label>
+                <label><input type="radio" name="reportReason" value="NUDITY"> Nudity or explicit content</label>
+                <label><input type="radio" name="reportReason" value="HARASSMENT"> Harassment or bullying</label>
+                <label><input type="radio" name="reportReason" value="HATE_SPEECH"> Hate speech</label>
+                <label><input type="radio" name="reportReason" value="VIOLENCE"> Violence or threats</label>
+                <label><input type="radio" name="reportReason" value="SPAM"> Spam or unwanted content</label>
+                <label><input type="radio" name="reportReason" value="OTHER"> Other inappropriate behavior</label>
+            </div>
+            <textarea id="reportDetails" placeholder="Additional details (optional)" rows="3"></textarea>
+            <div class="modal-buttons">
+                <button onclick="submitReport()" class="submit-btn">Submit Report</button>
+                <button onclick="hideReportModal()" class="cancel-btn">Cancel</button>
             </div>
         </div>
     </div>

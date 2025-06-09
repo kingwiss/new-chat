@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
+const AIModeration = require('./ai-moderation');
 
 const app = express();
 const server = http.createServer(app);
@@ -18,6 +19,10 @@ app.use(express.static(path.join(__dirname)));
 // Store connected users
 const users = new Map();
 const waitingUsers = new Set();
+
+// Initialize AI Moderation Service
+const aiModeration = new AIModeration();
+aiModeration.initialize();
 
 // Serve the main page
 app.get('/', (req, res) => {
@@ -176,7 +181,106 @@ io.on('connection', (socket) => {
     socket.on('chat-message', (data) => {
         const currentUser = users.get(socket.id);
         if (currentUser && currentUser.partnerId) {
+            // Check if user is banned before allowing messages
+            if (aiModeration.isUserBanned(socket.id)) {
+                socket.emit('user-banned', {
+                    reason: 'You have been banned for inappropriate behavior',
+                    duration: '7 days'
+                });
+                return;
+            }
+            
             io.to(currentUser.partnerId).emit('chat-message', data);
+        }
+    });
+    
+    // Handle user reports
+    socket.on('report-user', async (data) => {
+        const { reportedUserId, reason } = data;
+        const currentUser = users.get(socket.id);
+        
+        if (!currentUser || !currentUser.partnerId) {
+            socket.emit('report-error', { message: 'No active chat to report' });
+            return;
+        }
+        
+        if (currentUser.partnerId !== reportedUserId) {
+            socket.emit('report-error', { message: 'Can only report current chat partner' });
+            return;
+        }
+        
+        try {
+            const result = await aiModeration.handleUserReport(
+                socket.id, 
+                reportedUserId, 
+                reason || 'Inappropriate behavior'
+            );
+            
+            if (result.success) {
+                socket.emit('report-success', {
+                    message: result.message,
+                    reportId: result.reportId
+                });
+                
+                // Notify the reported user (optional)
+                io.to(reportedUserId).emit('being-analyzed', {
+                    message: 'Your behavior is being analyzed due to a report'
+                });
+            } else {
+                socket.emit('report-error', { message: result.message });
+            }
+        } catch (error) {
+            console.error('Error handling user report:', error);
+            socket.emit('report-error', { message: 'Failed to submit report' });
+        }
+    });
+    
+    // Handle video frame analysis for AI moderation
+    socket.on('analyze-frame', async (frameData) => {
+        try {
+            const result = await aiModeration.analyzeVideoFrame(frameData, socket.id);
+            
+            if (result.isViolation) {
+                console.log(`Violation detected for user ${socket.id}:`, result.violations);
+                
+                // Take action based on violation severity
+                switch (result.action) {
+                    case 'immediate_ban':
+                        const banInfo = await aiModeration.banUser(socket.id, 'Immediate ban due to critical violation');
+                        socket.emit('user-banned', {
+                            reason: 'Inappropriate content detected',
+                            duration: '7 days',
+                            violations: result.violations
+                        });
+                        
+                        // Disconnect the user
+                        const currentUser = users.get(socket.id);
+                        if (currentUser && currentUser.partnerId) {
+                            io.to(currentUser.partnerId).emit('partner-banned', {
+                                message: 'Your chat partner has been banned for inappropriate behavior'
+                            });
+                        }
+                        
+                        socket.disconnect();
+                        break;
+                        
+                    case 'temporary_ban':
+                        socket.emit('violation-warning', {
+                            message: 'Warning: Inappropriate content detected. Further violations will result in a ban.',
+                            violations: result.violations
+                        });
+                        break;
+                        
+                    case 'warning':
+                        socket.emit('content-warning', {
+                            message: 'Please ensure your behavior follows community guidelines',
+                            violations: result.violations
+                        });
+                        break;
+                }
+            }
+        } catch (error) {
+            console.error('Error analyzing frame:', error);
         }
     });
     
