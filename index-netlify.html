@@ -3,142 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Video Chat - Netlify Version</title>
+    <title>Cerebray</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%233498db'/%3E%3Ccircle cx='35' cy='40' r='8' fill='white'/%3E%3Ccircle cx='65' cy='40' r='8' fill='white'/%3E%3Cpath d='M30 65 Q50 80 70 65' stroke='white' stroke-width='4' fill='none'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="modal-styles.css">
-    <style>
-        .netlify-notice {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 10px;
-            text-align: center;
-        }
-        .netlify-notice h3 {
-            margin: 0 0 10px 0;
-            font-size: 1.5em;
-        }
-        .netlify-notice p {
-            margin: 10px 0;
-            opacity: 0.9;
-        }
-    </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🎥 Random Video Chat</h1>
-            <p>Connect with strangers around the world</p>
-            <div class="stats">
-                <span>👥 Online: <span id="onlineCount">0</span></span>
-            </div>
         </header>
+        
 
-        <div class="netlify-notice">
-            <h3>🚀 Netlify Deployment Ready!</h3>
-            <p>This version is configured for Netlify static hosting</p>
-            <p><strong>Note:</strong> Real-time video chat requires additional WebRTC signaling services</p>
-        </div>
-
-        <main>
-            <div class="video-container">
-                <div class="video-wrapper">
-                    <video id="localVideo" autoplay muted playsinline></video>
-                    <div class="video-label">You</div>
+        
+        <!-- Header with logo and online count -->
+        <div class="header-bar">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="40" height="40">
+                            <circle cx="50" cy="50" r="45" fill="#3498db"/>
+                            <circle cx="35" cy="40" r="8" fill="white"/>
+                            <circle cx="65" cy="40" r="8" fill="white"/>
+                            <path d="M30 65 Q50 80 70 65" stroke="white" stroke-width="4" fill="none"/>
+                        </svg>
+                        <span class="logo-text">Cerebray</span>
+                    </div>
                 </div>
-                <div class="video-wrapper">
-                    <video id="remoteVideo" autoplay playsinline></video>
-                    <div class="video-label">Stranger</div>
+                <div class="header-right">
+                    <div id="onlineCount">Online users: 0</div>
                 </div>
             </div>
+        </div>
 
+        <!-- Main video area -->
+        <div class="main-video-area">
+            <!-- Primary video (remote) -->
+            <div class="primary-video">
+                <video id="remoteVideo" autoplay playsinline></video>
+                <div id="statusMessage" class="status-message">Click "Start" to begin</div>
+                <div id="waitingMessage" class="waiting-overlay">
+                    <div class="waiting-content">
+                        <div class="pulse-dot"></div>
+                        <p>Waiting for someone to connect...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Picture-in-picture local video -->
+            <div class="pip-video">
+                <video id="localVideo" autoplay muted playsinline></video>
+                <div class="video-label">You</div>
+            </div>
+            
+            <!-- Floating messages container -->
+            <div id="floatingMessages" class="floating-messages"></div>
+        </div>
+        
+        <!-- Bottom controls and input -->
+        <div class="bottom-controls">
             <div class="controls">
-                <button id="startButton" class="btn btn-primary">Start Chat</button>
-                <button id="endButton" class="btn btn-danger" style="display: none;">End Chat</button>
-                <button id="nextButton" class="btn btn-secondary" style="display: none;">Next Partner</button>
-                <button id="reportButton" class="btn btn-warning" style="display: none;" onclick="showReportModal()">Report User</button>
+                <button id="startBtn" class="btn btn-primary" type="button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M8 5V19L19 12L8 5Z" fill="currentColor"/>
+                    </svg>
+                    Start
+                </button>
+                <button id="nextBtn" class="btn btn-secondary" type="button" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L22 12L12 22L10.59 20.59L18.17 13H2V11H18.17L10.59 3.41L12 2Z" fill="currentColor"/>
+                    </svg>
+                    Next
+                </button>
+                <button id="endBtn" class="btn btn-danger" type="button" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+                    </svg>
+                    End Chat
+                </button>
             </div>
-
-            <div id="status" class="status">
-                Welcome! Click "Start Chat" to begin connecting with strangers.
+            
+            <!-- Chat messages container (hidden - using floating messages instead) -->
+            <div id="chatMessages" class="chat-messages" style="display: none;"></div>
+            
+            <div class="chat-input-area">
+                <div class="input-container">
+                    <input type="text" id="chatInput" placeholder="Type a message..." maxlength="500" disabled>
+                    <button id="sendBtn" class="send-btn" disabled>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
-        </main>
-
-        <footer>
-            <div class="footer-links">
-                <a href="privacy-policy.html">Privacy Policy</a>
-                <a href="terms-of-service.html">Terms of Service</a>
-                <a href="#" onclick="openDonationLink()">💝 Donate</a>
-            </div>
-            <p>&copy; 2024 Random Video Chat. All rights reserved.</p>
-        </footer>
-    </div>
-
-    <!-- Report Modal -->
-    <div id="reportModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="hideReportModal()">&times;</span>
-            <h2>Report User</h2>
-            <form id="reportForm">
-                <div class="report-reasons">
-                    <h3>Reason for reporting:</h3>
-                    <label><input type="radio" name="reason" value="inappropriate_content" required> Inappropriate Content</label>
-                    <label><input type="radio" name="reason" value="harassment" required> Harassment</label>
-                    <label><input type="radio" name="reason" value="spam" required> Spam</label>
-                    <label><input type="radio" name="reason" value="underage" required> Underage User</label>
-                    <label><input type="radio" name="reason" value="other" required> Other</label>
-                </div>
-                
-                <div class="report-details">
-                    <label for="details">Additional Details (optional):</label>
-                    <textarea id="details" name="details" rows="4" placeholder="Please provide any additional information..."></textarea>
-                </div>
-                
-                <div class="modal-buttons">
-                    <button type="button" class="btn btn-cancel" onclick="hideReportModal()">Cancel</button>
-                    <button type="button" class="btn btn-submit" onclick="submitReport()">Submit Report</button>
-                </div>
-            </form>
         </div>
-    </div>
 
-    <!-- Deployment Information Modal -->
-    <div id="deploymentInfo" class="modal" style="display: block;">
-        <div class="modal-content">
-            <span class="close" onclick="document.getElementById('deploymentInfo').style.display='none'">&times;</span>
-            <h2>🚀 Netlify Deployment Guide</h2>
-            <div style="text-align: left; padding: 20px;">
-                <h3>✅ What's Ready:</h3>
-                <ul>
-                    <li>Static files configured for Netlify</li>
-                    <li>Serverless functions setup</li>
-                    <li>Build configuration (netlify.toml)</li>
-                    <li>CORS and security headers</li>
-                </ul>
-                
-                <h3>⚠️ Important Notes:</h3>
-                <ul>
-                    <li>Socket.IO requires persistent connections (not available on Netlify)</li>
-                    <li>Real-time video chat needs WebRTC signaling server</li>
-                    <li>Consider using Agora.io, Twilio Video, or similar services</li>
-                </ul>
-                
-                <h3>🔧 Deployment Steps:</h3>
-                <ol>
-                    <li>Push code to GitHub</li>
-                    <li>Connect repository to Netlify</li>
-                    <li>Set build command: <code>npm run build</code></li>
-                    <li>Set publish directory: <code>public</code></li>
-                    <li>Add environment variables in Netlify dashboard</li>
-                </ol>
-                
-                <h3>🌟 Alternative Platforms for Full Functionality:</h3>
-                <ul>
-                    <li><strong>Vercel:</strong> Supports serverless functions with WebSocket</li>
-                    <li><strong>Railway:</strong> Full Node.js hosting</li>
-                    <li><strong>Render:</strong> Free tier with WebSocket support</li>
-                </ul>
+    </div>
+    
+    <!-- Floating buttons -->
+    <div class="floating-buttons">
+        <a href="#" class="floating-btn report-btn" onclick="reportUser()" id="reportBtn" style="display: none;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15.73 3H8.27L3 8.27v7.46L8.27 21h7.46L21 15.73V8.27L15.73 3zM12 17.3c-.72 0-1.3-.58-1.3-1.3 0-.72.58-1.3 1.3-1.3.72 0 1.3.58 1.3 1.3 0 .72-.58 1.3-1.3 1.3zm1-4.3h-2V7h2v6z" fill="currentColor"/>
+            </svg>
+            <span>Report</span>
+        </a>
+        <a href="#" class="floating-btn donation-btn" onclick="showDonationModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/>
+            </svg>
+            <span>Donate</span>
+        </a>
+        <a href="#" class="floating-btn contact-btn" onclick="showContactModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/>
+            </svg>
+            <span>Contact Us</span>
+        </a>
+    </div>
+    
+    <!-- Welcome Popup Modal -->
+    <div id="welcomeModal" class="welcome-popup" style="display: none;">
+        <div class="welcome-overlay" onclick="closeWelcomePopup()"></div>
+        <div class="welcome-dialog">
+            <div class="welcome-header">
+                <h2>Welcome to Cerebray!</h2>
+                <button class="welcome-close-btn" onclick="closeWelcomePopup()">&times;</button>
+            </div>
+            <div class="welcome-body">
+                <p>This is the Beta for a new social media that is on the rise!</p>
+                <p><strong>Please DO NOT BE NAUGHTY</strong></p>
+                <p>Also remember to be respectful!</p>
+                <p>Enjoy making new friends in various fields!</p>
+                <div class="welcome-actions">
+                    <button type="button" class="welcome-btn" onclick="closeWelcomePopup()">Get Started</button>
+                </div>
             </div>
         </div>
     </div>
