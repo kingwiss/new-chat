@@ -1,6 +1,9 @@
 // AI Content Moderation System for Video Chat Application
 // Integrates with Sightengine API for real-time video content analysis
 
+const fetch = require('node-fetch');
+const FormData = require('form-data');
+
 class AIModeration {
     constructor() {
         // Sightengine API configuration
