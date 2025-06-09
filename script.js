@@ -39,6 +39,7 @@ class VideoChat {
         this.waitingMessage = document.getElementById('waitingMessage');
         this.chatMessages = document.getElementById('chatMessages');
         this.floatingMessages = document.getElementById('floatingMessages');
+        this.onlineCount = document.getElementById('onlineCount');
             
             // Video labels
             this.localVideoLabel = document.getElementById('localVideoLabel');
@@ -58,7 +59,7 @@ class VideoChat {
             // Check if all elements are loaded
             const requiredElements = [
                 this.localVideo, this.remoteVideo, this.startBtn, this.nextBtn, 
-                this.endBtn, this.sendBtn, this.chatInput, this.statusMessage
+                this.endBtn, this.sendBtn, this.chatInput, this.statusMessage, this.onlineCount
             ];
             
             this.elementsLoaded = requiredElements.every(element => element !== null);
@@ -364,6 +365,12 @@ class VideoChat {
         
         this.socket.on('report-error', (data) => {
             this.showReportError(data);
+        });
+        
+        this.socket.on('online-count', (count) => {
+            if (this.onlineCount) {
+                this.onlineCount.textContent = `Online users: ${count}`;
+            }
         });
         
         this.socket.on('no-users', () => {
